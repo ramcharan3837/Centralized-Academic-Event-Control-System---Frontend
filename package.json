@@ -13,7 +13,8 @@
     "react-calendar": "^6.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.10.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "serve": "^14.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.0",
@@ -22,7 +23,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "CI=false react-scripts build",
+    "serve": "serve -s build -l 3000",
+    "postinstall": "npm rebuild"
   },
   "browserslist": {
     "production": [
@@ -35,6 +38,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "description": "",
   "main": "postcss.config.js",
