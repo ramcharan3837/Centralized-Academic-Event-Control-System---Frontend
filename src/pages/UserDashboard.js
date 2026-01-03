@@ -844,6 +844,7 @@ function UserDashboard() {
                         } else {
                           setUseCustomVenue(false);
                           setVenue(e.target.value);
+                          
                         }
                     }}
                     className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
