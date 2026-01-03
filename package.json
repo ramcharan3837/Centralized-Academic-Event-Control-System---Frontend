@@ -24,8 +24,6 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "CI=false react-scripts build",
-    "serve": "serve -s build -l 3000",
-    "postinstall": "npm rebuild"
   },
   "browserslist": {
     "production": [
