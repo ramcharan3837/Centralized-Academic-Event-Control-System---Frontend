@@ -8,15 +8,14 @@ function CompactEventCalendar({ events = [] }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
 
-  const eventDates = events.map(event => {
-    // Extract just the date part without timezone conversion
-    const dateOnly = event.date.split('T')[0];
+  const eventDates = events.map((event) => {
+    const dateOnly = event.date.split("T")[0];
     return dateOnly;
   });
 
   const getEventsForDate = (dateStr) => {
-    return events.filter(event => {
-      const eventDateOnly = event.date.split('T')[0];
+    return events.filter((event) => {
+      const eventDateOnly = event.date.split("T")[0];
       return eventDateOnly === dateStr;
     });
   };
@@ -26,8 +25,21 @@ function CompactEventCalendar({ events = [] }) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startingDayOfWeek = new Date(year, month, 1).getDay();
 
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const dayNames = ["S", "M", "T", "W", "T", "F", "S"];
 
   const previousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
@@ -42,32 +54,34 @@ function CompactEventCalendar({ events = [] }) {
   };
 
   const handleDateClick = (day) => {
-    // Create date string in YYYY-MM-DD format
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const dayStr = String(day).padStart(2, '0');
-    const dateStr = `${year}-${month}-${dayStr}`;
+    const y = currentDate.getFullYear();
+    const m = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const d = String(day).padStart(2, "0");
+    const dateStr = `${y}-${m}-${d}`;
+
     setSelectedDate(dateStr);
     setShowEventDetails(true);
   };
 
   const calendarDays = [];
+
   for (let i = 0; i < startingDayOfWeek; i++) {
     calendarDays.push(<div key={`empty-${i}`} className="aspect-square" />);
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
-    // Create date string in YYYY-MM-DD format for comparison
-    const monthStr = String(month + 1).padStart(2, '0');
-    const dayStr = String(day).padStart(2, '0');
+    const monthStr = String(month + 1).padStart(2, "0");
+    const dayStr = String(day).padStart(2, "0");
     const dateStr = `${year}-${monthStr}-${dayStr}`;
-    
+
     const hasEvent = eventDates.includes(dateStr);
-    
-    // Get today's date in YYYY-MM-DD format
+
     const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const todayStr = `${today.getFullYear()}-${String(
+      today.getMonth() + 1
+    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
     const isToday = dateStr === todayStr;
+
     const isSelected = selectedDate === dateStr;
 
     calendarDays.push(
@@ -75,10 +89,13 @@ function CompactEventCalendar({ events = [] }) {
         key={day}
         onClick={() => handleDateClick(day)}
         className={`aspect-square p-1 rounded text-xs font-medium transition-all relative flex items-center justify-center
-          ${isToday ? 'ring-1 ring-blue-400' : ''}
-          ${isSelected ? 'bg-blue-600 text-white' : ''}
-          ${hasEvent && !isSelected ? 'bg-green-500 text-white font-bold' : ''}
-          ${!hasEvent && !isSelected ? 'text-gray-400 hover:bg-gray-700/30' : ''}`}
+          ${isToday ? "ring-1 ring-blue-400" : ""}
+          ${isSelected ? "bg-blue-600 text-white" : ""}
+          ${hasEvent && !isSelected ? "bg-green-500 text-white font-bold" : ""}
+          ${!hasEvent && !isSelected
+            ? "text-gray-400 hover:bg-gray-700/30"
+            : ""
+          }`}
       >
         {day}
       </button>
@@ -90,22 +107,47 @@ function CompactEventCalendar({ events = [] }) {
   return (
     <div className="bg-gray-800/90 border border-gray-700 rounded-xl shadow-lg p-3 w-64">
       <div className="flex items-center justify-between mb-3">
-        <button onClick={previousMonth} className="p-1 hover:bg-gray-700/50 rounded transition">
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <polyline points="15 18 9 12 15 6" strokeWidth="2"/>
+        <button
+          onClick={previousMonth}
+          className="p-1 hover:bg-gray-700/50 rounded transition"
+        >
+          <svg
+            className="w-4 h-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="15 18 9 12 15 6" strokeWidth="2" />
           </svg>
         </button>
-        <h4 className="text-sm font-semibold text-white">{monthNames[month]} {year}</h4>
-        <button onClick={nextMonth} className="p-1 hover:bg-gray-700/50 rounded transition">
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <polyline points="9 18 15 12 9 6" strokeWidth="2"/>
+
+        <h4 className="text-sm font-semibold text-white">
+          {monthNames[month]} {year}
+        </h4>
+
+        <button
+          onClick={nextMonth}
+          className="p-1 hover:bg-gray-700/50 rounded transition"
+        >
+          <svg
+            className="w-4 h-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="9 18 15 12 9 6" strokeWidth="2" />
           </svg>
         </button>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-1">
-        {dayNames.map(day => (
-          <div key={day} className="text-center text-xs font-semibold text-gray-500">{day}</div>
+        {dayNames.map((day) => (
+          <div
+            key={day}
+            className="text-center text-xs font-semibold text-gray-500"
+          >
+            {day}
+          </div>
         ))}
       </div>
 
@@ -126,22 +168,46 @@ function CompactEventCalendar({ events = [] }) {
         <div className="mt-3 pt-3 border-t border-gray-700/50">
           <div className="flex justify-between items-center mb-2">
             <h5 className="text-xs font-semibold text-gray-300">
-              {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              {new Date(
+                selectedDate + "T00:00:00"
+              ).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
             </h5>
-            <button onClick={() => setShowEventDetails(false)} className="text-gray-500 hover:text-gray-300">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            <button
+              onClick={() => setShowEventDetails(false)}
+              className="text-gray-500 hover:text-gray-300"
+            >
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
+
           {selectedDayEvents.length === 0 ? (
             <p className="text-xs text-gray-500 italic">No events</p>
           ) : (
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {selectedDayEvents.map((event) => (
-                <div key={event._id} className="bg-gray-700/40 p-2 rounded text-xs">
-                  <p className="text-white font-medium truncate">{event.name}</p>
-                  <p className="text-gray-400 truncate">📍 {event.venue}</p>
+                <div
+                  key={event._id || event.id}
+                  className="bg-gray-700/40 p-2 rounded text-xs"
+                >
+                  <p className="text-white font-medium truncate">
+                    {event.name}
+                  </p>
+                  <p className="text-gray-400 truncate">{event.venue}</p>
                 </div>
               ))}
             </div>
@@ -156,13 +222,32 @@ function UserDashboard() {
   const [eventsData, setEventsData] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+
   const [date, setDate] = useState("");
+
   const [registeredEvents, setRegisteredEvents] = useState([]);
+  const [attendedEvents, setAttendedEvents] = useState([]);
+
   const [recentlyRegistered, setRecentlyRegistered] = useState(null);
   const [viewStates, setViewStates] = useState({});
+
   const [showEventForm, setShowEventForm] = useState(false);
+
+  const [feedbackInputs, setFeedbackInputs] = useState({});
+  const [feedbackList, setFeedbackList] = useState({});
+  const [loadingFeedback, setLoadingFeedback] = useState({});
+
+  // Tabs and filters
+  const [activeTab, setActiveTab] = useState("all"); // "all" | "registered" | "attended"
+  const [filters, setFilters] = useState({
+    date: "",
+    name: "",
+    venue: "",
+  });
+
+  // Confirmation modal
+  const [confirmEvent, setConfirmEvent] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Event form states
   const [editEvent, setEditEvent] = useState(null);
@@ -174,13 +259,240 @@ function UserDashboard() {
   const [about, setAbout] = useState("");
   const [learning, setLearning] = useState("");
 
+  const [useCustomVenue , setUseCustomVenue] = useState(false)
+
+  const [notificationsData, setNotificationsData] = useState([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [notificationsError, setNotificationsError] = useState("");
+
+  useEffect(()=>{
+    getAllVenues()
+  },[])
+
+  const [venues,setVenues] = useState([])
+  const getAllVenues = () =>{
+    axios.get(base_url+"venues")
+    .then((res)=>{
+      setVenues(res.data.venues)
+    })
+  }
+
+  // call this e.g. in useEffect or on click
+
+  const handleNotifications = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login again");
+      return;
+    }
+    setLoadingNotifications(true);
+    axios
+      .get(base_url + "notifications", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setNotificationsData(res.data.notifications || []))
+      .catch((err) => {
+        console.error(err);
+        alert(err.response?.data?.message || "Failed to load notifications");
+      })
+      .finally(() => setLoadingNotifications(false));
+  };
+
+  const handleMarkOneRead = (id) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login again");
+      return;
+    }
+    axios
+      .put(base_url + `notifications/${id}/read`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(() => {
+        setNotificationsData((prev) =>
+          prev.map((n) =>
+            n._id === id ? { ...n, isRead: true } : n
+          )
+        );
+      })
+      .catch((err) => {
+        console.error(err);
+        alert(err.response?.data?.message || "Failed to update notification");
+      });
+  };
+
+  const handleMarkAllRead = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login again");
+      return;
+    }
+    axios
+      .put(base_url + "notifications/read-all", {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(() => {
+        setNotificationsData((prev) =>
+          prev.map((n) => ({ ...n, isRead: true }))
+        );
+      })
+      .catch((err) => {
+        console.error(err);
+        alert(err.response?.data?.message || "Failed to update notifications");
+      });
+  };
+
+  // decode userId from JWT
+  const getUserIdFromToken = () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.userId;
+    } catch (e) {
+      return null;
+    }
+  };
+
   useEffect(() => {
     getAllEvents();
+    fetchRegisteredEventsFromBackend();
+    fetchAttendedEventsFromBackend();
   }, []);
+
+  // ====== FEEDBACK LOGIC ======
+
+  const loadFeedbackForEvent = async (eventId) => {
+    try {
+      setLoadingFeedback((prev) => ({ ...prev, [eventId]: true }));
+
+      const res = await axios.get(`${base_url}events/${eventId}/feedback`);
+
+      setFeedbackList((prev) => ({
+        ...prev,
+        [eventId]: res.data.feedbacks || [],
+      }));
+    } catch (err) {
+      console.error("Error fetching feedback", err);
+    } finally {
+      setLoadingFeedback((prev) => ({ ...prev, [eventId]: false }));
+    }
+  };
+
+  const submitFeedback = async (eventId) => {
+    const text = feedbackInputs[eventId]?.trim();
+
+    if (!text) {
+      alert("Please enter feedback");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login again");
+        return;
+      }
+
+      await axios.post(
+        `${base_url}events/${eventId}/feedback`,
+        { feedback: text },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setFeedbackInputs((prev) => ({ ...prev, [eventId]: "" }));
+      await loadFeedbackForEvent(eventId);
+    } catch (err) {
+      console.error("Error submitting feedback", err);
+      const msg =
+        err.response?.data?.message || "Failed to submit feedback";
+      alert(msg);
+    }
+  };
+
+  // ====== BACKEND FETCHES ======
+
+  const fetchRegisteredEventsFromBackend = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = getUserIdFromToken();
+      if (!token || !userId) return;
+
+      const res = await axios.get(
+        `${base_url}users/${userId}/registrations`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setRegisteredEvents(res.data.events || []);
+    } catch (err) {
+      console.error("Error fetching registered events", err);
+    }
+  };
+
+  const fetchAttendedEventsFromBackend = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = getUserIdFromToken();
+      if (!token || !userId) return;
+
+      const res = await axios.get(
+        `${base_url}users/${userId}/attended`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setAttendedEvents(res.data.events || []);
+    } catch (err) {
+      console.error("Error fetching attended events", err);
+    }
+  };
+
+  const getAllEvents = () => {
+    axios
+      .get(base_url + "events")
+      .then((res) => {
+        const allEvents = res?.data?.events || res.data || [];
+        setEventsData(allEvents);
+
+        const today = new Date();
+
+        const upcoming = allEvents.filter(
+          (event) => new Date(event.date) >= today
+        );
+        const past = allEvents.filter(
+          (event) => new Date(event.date) < today
+        );
+
+        upcoming.sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
+        past.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+
+        setUpcomingEvents(upcoming);
+        setPastEvents(past);
+      })
+      .catch((err) => console.log(err.message));
+  };
+
+  // ====== EVENT CREATE / EDIT ======
 
   const handleSaveEvent = async (e) => {
     e.preventDefault();
-    if (!name || !eventDate || !venue || !strength || !shortDesc || !about || !learning) {
+
+    if (
+      !name ||
+      !eventDate ||
+      !venue ||
+      !strength ||
+      !shortDesc ||
+      !about ||
+      !learning
+    ) {
       alert("Please fill all fields");
       return;
     }
@@ -192,19 +504,15 @@ function UserDashboard() {
       strength: parseInt(strength),
       shortDesc,
       about,
-      learning
+      learning,
     };
 
-    const token = localStorage.getItem('token');
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    };
+    const token = localStorage.getItem("token");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
 
     if (editEvent) {
       axios
-        .put(base_url + `events/${editEvent._id}`, eventData, config)
+        .put(base_url + `events/${editEvent.id}`, eventData, config)
         .then(() => {
           alert("Event updated and submitted for re-approval!");
           resetForm();
@@ -212,7 +520,9 @@ function UserDashboard() {
         })
         .catch((err) => {
           console.log(err);
-          alert(err.response?.data?.message || "Failed to update event");
+          alert(
+            err.response?.data?.message || "Failed to update event"
+          );
         });
     } else {
       axios
@@ -224,7 +534,9 @@ function UserDashboard() {
         })
         .catch((err) => {
           console.log(err);
-          alert(err.response?.data?.message || "Failed to create event");
+          alert(
+            err.response?.data?.message || "Failed to create event"
+          );
         });
     }
   };
@@ -253,287 +565,899 @@ function UserDashboard() {
     setShowEventForm(true);
   };
 
-  const getAllEvents = () => {
-    axios
-      .get(base_url + "events")
-      .then((res) => {
-        const allEvents = res?.data?.events;
-        setEventsData(allEvents);
+  // ====== REGISTRATION FLOW ======
 
-        const today = new Date();
-        const upcoming = allEvents.filter((event) => new Date(event.date) >= today);
-        const past = allEvents.filter((event) => new Date(event.date) < today);
-
-        upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-        past.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        setUpcomingEvents(upcoming);
-        setPastEvents(past);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+  const isEventFilled = (event) => {
+    const max = parseInt(event.strength || 0, 10);
+    const current = parseInt(event.currentRegistrations || 0, 10);
+    return max > 0 && current >= max;
   };
 
-  const handleRegister = (event) => {
-    if (!registeredEvents.find((e) => e._id === event._id)) {
+  const updateRegisteredLocal = (event) => {
+    const already = registeredEvents.find(
+      (e) => (e.id || e._id) === (event.id || event._id)
+    );
+
+    if (!already) {
       setRegisteredEvents([...registeredEvents, event]);
       setRecentlyRegistered(event);
     } else {
       setRecentlyRegistered({ ...event, already: true });
     }
+
+    setUpcomingEvents((prev) =>
+      prev.map((e) =>
+        (e.id || e._id) === (event.id || event._id)
+          ? {
+            ...e,
+            currentRegistrations: (e.currentRegistrations || 0) + 1,
+          }
+          : e
+      )
+    );
+  };
+
+  const handleRegisterClick = (event) => {
+    setConfirmEvent(event);
+    setShowConfirm(true);
+  };
+
+  const confirmRegistration = async () => {
+    if (!confirmEvent) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login again");
+        return;
+      }
+
+      await axios.post(
+        `${base_url}events/${confirmEvent.id || confirmEvent._id}/register`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      updateRegisteredLocal(confirmEvent);
+      setShowConfirm(false);
+      setConfirmEvent(null);
+
+      // also refresh attended events (in case event is now past)
+      fetchAttendedEventsFromBackend();
+    } catch (err) {
+      console.error("Error registering for event", err);
+      const msg =
+        err.response?.data?.message || "Failed to register";
+      alert(msg);
+      setShowConfirm(false);
+      setConfirmEvent(null);
+    }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     window.location.href = "/";
   };
 
-  // Filter events by selected date
+  // ====== FILTER HELPERS ======
+
   const filteredUpcomingEvents = date
     ? upcomingEvents.filter((event) => event.date === date)
     : upcomingEvents;
 
+  const applyFilters = (list) => {
+    return list.filter((ev) => {
+      const dateStr = ev.date ? ev.date.split("T")[0] : "";
+
+      const matchesDate = filters.date
+        ? dateStr === filters.date
+        : true;
+
+      const matchesName = filters.name
+        ? ev.name?.toLowerCase().includes(filters.name.toLowerCase())
+        : true;
+
+      const matchesVenue = filters.venue
+        ? ev.venue
+          ?.toLowerCase()
+          .includes(filters.venue.toLowerCase())
+        : true;
+
+      return matchesDate && matchesName && matchesVenue;
+    });
+  };
+
+  // ====== RENDER ======
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-      {/* Compact Calendar - Fixed Position Top Right */}
-      <div className="fixed top-20 right-6 z-40">
-        <CompactEventCalendar events={eventsData} />
-      </div>
-
       {/* Navbar */}
       <nav className="bg-gray-950 bg-opacity-80 backdrop-blur-md text-white px-8 py-4 flex justify-between items-center shadow-lg border-b border-gray-700">
-        <h1 className="text-2xl font-bold text-blue-400">Event Coordination Engine</h1>
+        <h1 className="text-2xl font-bold text-blue-400">
+          Event Coordination Engine
+        </h1>
+
         <div className="flex space-x-8 text-lg">
-          <a href="/home" className="hover:text-blue-300 transition">Home</a>
-          <a href="#browse" className="hover:text-blue-300 transition">Browse Events</a>
-          <a href="#registered" className="hover:text-blue-300 transition">My Events</a>
-          <button 
+          <a
+            href="/home"
+            className="hover:text-blue-300 transition"
+          >
+            Home
+          </a>
+
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`transition ${activeTab === "all"
+              ? "text-blue-300 underline"
+              : "hover:text-blue-300"
+              }`}
+          >
+            Browse Events
+          </button>
+
+          <button
+            onClick={() => setActiveTab("registered")}
+            className={`transition ${activeTab === "registered"
+              ? "text-blue-300 underline"
+              : "hover:text-blue-300"
+              }`}
+          >
+            Registered Events
+          </button>
+
+          <button
+            onClick={() => setActiveTab("attended")}
+            className={`transition ${activeTab === "attended"
+              ? "text-blue-300 underline"
+              : "hover:text-blue-300"
+              }`}
+          >
+            Attended Events
+          </button>
+          <button
+            onClick={() => {
+              handleNotifications();
+              setActiveTab("notifications")
+            }}
+            className="hover:text-red-400 transition"
+          >
+            Notifications
+          </button>
+
+          <button
             onClick={() => setShowEventForm(!showEventForm)}
             className="hover:text-green-300 transition"
           >
             {showEventForm ? "Hide Form" : "Create Event"}
           </button>
-          <button onClick={handleLogout} className="hover:text-blue-400 transition">Logout</button>
+
+          <button
+            onClick={handleLogout}
+            className="hover:text-blue-400 transition"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 
-      {/* Recently Registered Notification */}
-      {recentlyRegistered && (
-        <div className={`bg-gray-800/90 border ${recentlyRegistered.already ? "border-yellow-500" : "border-green-500"} p-6 rounded-2xl shadow-lg mx-10 my-4`}>
-          <p className={`text-lg font-semibold mb-2 ${recentlyRegistered.already ? "text-yellow-400" : "text-green-400"}`}>
-            {recentlyRegistered.already
-              ? `⚠️ You already registered for ${recentlyRegistered.name}`
-              : `✅ Successfully registered for ${recentlyRegistered.name}`}
-          </p>
-          <button
-            onClick={() => setRecentlyRegistered(null)}
-            className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded transition"
-          >
-            Close
-          </button>
+      {/* Layout */}
+      <div className="flex px-8 pt-6 pb-12 gap-8">
+        {/* Left: Calendar */}
+        <div className="hidden lg:block">
+          <CompactEventCalendar events={eventsData} />
         </div>
-      )}
 
-      {/* Hero Section */}
-      <section className="text-center py-12">
-        <h2 className="text-4xl font-bold text-blue-400 tracking-wide">
-          Welcome, <span className="text-white">User</span>
-        </h2>
-        <p className="text-gray-400 mt-3 text-lg">
-          Discover and register for exciting upcoming events
-        </p>
-        <button
-          onClick={() =>
-            document.getElementById("browse").scrollIntoView({ behavior: "smooth" })
-          }
-          className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition"
-        >
-          Browse Events
-        </button>
-      </section>
-
-      {/* Event Creation/Edit Form */}
-      {showEventForm && (
-        <div className="mx-10 mb-6 bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-2xl font-bold text-blue-400">
-              {editEvent ? "Edit Event" : "Create Event"}
-            </h3>
-            <button
-              onClick={resetForm}
-              className="text-red-400 hover:text-red-500 text-2xl"
+        {/* Right: Content */}
+        <div className="flex-1">
+          {/* Recently registered banner */}
+          {recentlyRegistered && (
+            <div
+              className={`bg-gray-800/90 border ${recentlyRegistered.already
+                ? "border-yellow-500"
+                : "border-green-500"
+                } p-6 rounded-2xl shadow-lg mb-4`}
             >
-              ✕
-            </button>
-          </div>
-          <div className="bg-blue-900/30 border border-blue-700 p-3 rounded-lg mb-4">
-            <p className="text-blue-300 text-sm">
-              ℹ️ Your event will be submitted for admin approval before it appears publicly
+              <p className="text-lg font-semibold mb-2">
+                {recentlyRegistered.already
+                  ? "You already registered for"
+                  : "Successfully registered for"}{" "}
+                <span className="text-blue-300">
+                  {recentlyRegistered.name}
+                </span>
+              </p>
+
+              <button
+                onClick={() => setRecentlyRegistered(null)}
+                className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded transition"
+              >
+                Close
+              </button>
+            </div>
+          )}
+
+          {/* Hero */}
+          <section className="text-center py-8">
+            <h2 className="text-4xl font-bold text-blue-400 tracking-wide">
+              Welcome, <span className="text-white">User</span>
+            </h2>
+            <p className="text-gray-400 mt-3 text-lg">
+              Discover and register for exciting upcoming events
             </p>
-          </div>
-          <form onSubmit={handleSaveEvent} className="space-y-4">
-            <input 
-              type="text" 
-              placeholder="Event Name" 
-              value={name} 
-              onChange={e => setName(e.target.value)} 
-              className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none" 
-            />
-            <input 
-              type="date" 
-              value={eventDate} 
-              onChange={e => setEventDate(e.target.value)} 
-              className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none" 
-            />
-            <input 
-              type="text" 
-              placeholder="Venue" 
-              value={venue} 
-              onChange={e => setVenue(e.target.value)} 
-              className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none" 
-            />
-            <input 
-              type="number" 
-              placeholder="Expected Participants" 
-              value={strength} 
-              onChange={e => setStrength(e.target.value)} 
-              className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none" 
-            />
-            <textarea 
-              placeholder="Short Description" 
-              value={shortDesc} 
-              onChange={e => setShortDesc(e.target.value)} 
-              className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white h-20 resize-none focus:border-blue-500 focus:outline-none" 
-            />
-            <textarea 
-              placeholder="About Event" 
-              value={about} 
-              onChange={e => setAbout(e.target.value)} 
-              className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white h-24 resize-none focus:border-blue-500 focus:outline-none" 
-            />
-            <textarea 
-              placeholder="Learning Outcomes" 
-              value={learning} 
-              onChange={e => setLearning(e.target.value)} 
-              className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white h-24 resize-none focus:border-blue-500 focus:outline-none" 
-            />
-            <div className="flex justify-end gap-4 mt-2">
-              <button 
-                type="button" 
-                onClick={resetForm} 
-                className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded transition"
+            <button
+              onClick={() =>
+                document
+                  .getElementById("browse")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition"
+            >
+              Browse Events
+            </button>
+          </section>
+
+          {/* Create / Edit Event form */}
+          {showEventForm && (
+            <section>
+              <div className="mb-6 bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-2xl font-bold text-blue-400">
+                    {editEvent ? "Edit Event" : "Create Event"}
+                  </h3>
+                  <button
+                    onClick={resetForm}
+                    className="text-red-400 hover:text-red-500 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="bg-blue-900/30 border border-blue-700 p-3 rounded-lg mb-4">
+                  <p className="text-blue-300 text-sm">
+                    Your event will be submitted for admin approval before it
+                    appears publicly.
+                  </p>
+                </div>
+
+                <form
+                  onSubmit={handleSaveEvent}
+                  className="space-y-4"
+                >
+                  <input
+                    type="text"
+                    placeholder="Event Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                    className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                  />
+                  <select
+                    value={useCustomVenue?"other":venue}
+                    onChange={(e)=>{
+                      if (e.target.value === "other") {
+                          setUseCustomVenue(true);
+                          setVenue("");
+                        } else {
+                          setUseCustomVenue(false);
+                          setVenue(e.target.value);
+                        }
+                    }}
+                    className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                    >
+                      <option value="">Select a venue</option>
+                      {venues?.map((venue,id)=>
+                        <option key={id} value={venue?.name}>{venue?.name}</option>
+                      )}
+                      <option value="other">
+                        Others (manual entry)
+                      </option>
+                  </select>
+                    {useCustomVenue && (
+                      <input
+                        type="text"
+                        placeholder="Enter venue manually"
+                        value={venue}
+                        onChange={(e) =>
+                          setVenue(e.target.value)
+                        }
+                        className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                      />
+                    )}
+                  <input
+                    type="number"
+                    placeholder="Expected Participants"
+                    value={strength}
+                    onChange={(e) => setStrength(e.target.value)}
+                    className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                  />
+                  <textarea
+                    placeholder="Short Description"
+                    value={shortDesc}
+                    onChange={(e) => setShortDesc(e.target.value)}
+                    className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white h-20 resize-none focus:border-blue-500 focus:outline-none"
+                  />
+                  <textarea
+                    placeholder="About Event"
+                    value={about}
+                    onChange={(e) => setAbout(e.target.value)}
+                    className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white h-24 resize-none focus:border-blue-500 focus:outline-none"
+                  />
+                  <textarea
+                    placeholder="Learning Outcomes"
+                    value={learning}
+                    onChange={(e) => setLearning(e.target.value)}
+                    className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white h-24 resize-none focus:border-blue-500 focus:outline-none"
+                  />
+
+                  <div className="flex justify-end gap-4 mt-2">
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded transition"
+                    >
+                      {editEvent ? "Update Event" : "Submit Event"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </section>
+          )}
+
+          {/* Filters + Tabs */}
+          <section className="pb-12">
+            <div className="flex flex-col md:flex-row gap-10 relative">
+              {/* Top-right date filter */}
+              <div className="absolute right-0 top-0 md:top-[-50px] flex flex-col items-end">
+                <label className="text-blue-400 text-sm mb-1 font-semibold">
+                  Browse by Date
+                </label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => setDate("")}
+                  className="text-red-400 text-xs mt-2 underline hover:text-red-500"
+                >
+                  Clear Filter
+                </button>
+              </div>
+
+              {/* Main filters + content */}
+              <div className="flex-1 mt-10">
+                {/* Extra filters */}
+                <div className="mb-10 flex flex-wrap gap-4">
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">
+                      Filter by Date
+                    </label>
+                    <input
+                      type="date"
+                      value={filters.date}
+                      onChange={(e) =>
+                        setFilters((f) => ({
+                          ...f,
+                          date: e.target.value,
+                        }))
+                      }
+                      className="bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">
+                      Filter by Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Event name"
+                      value={filters.name}
+                      onChange={(e) =>
+                        setFilters((f) => ({
+                          ...f,
+                          name: e.target.value,
+                        }))
+                      }
+                      className="bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">
+                      Filter by Venue
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Venue"
+                      value={filters.venue}
+                      onChange={(e) =>
+                        setFilters((f) => ({
+                          ...f,
+                          venue: e.target.value,
+                        }))
+                      }
+                      className="bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {(filters.date ||
+                    filters.name ||
+                    filters.venue) && (
+                      <button
+                        onClick={() =>
+                          setFilters({ date: "", name: "", venue: "" })
+                        }
+                        className="self-end text-xs text-red-400 underline hover:text-red-500"
+                      >
+                        Clear All Filters
+                      </button>
+                    )}
+                </div>
+
+                {/* ===== TAB CONTENT ===== */}
+
+                {/* All (Upcoming + Past + Feedback) */}
+                {activeTab === "all" && (
+                  <>
+                    {/* Upcoming */}
+                    <section id="browse" className="mb-12">
+                      <h3 className="text-2xl font-bold mb-6 text-blue-400">
+                        Upcoming Events
+                      </h3>
+
+                      {applyFilters(filteredUpcomingEvents).length ===
+                        0 ? (
+                        <p className="text-gray-400">
+                          No upcoming events for this selection.
+                        </p>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                          {applyFilters(
+                            filteredUpcomingEvents
+                          ).map((event) => (
+                            <div
+                              key={event.id || event._id}
+                              className="bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg hover:shadow-blue-400/20 transition-all"
+                            >
+                              <h4 className="text-lg font-semibold text-white mb-2">
+                                {event.name}
+                              </h4>
+                              <p className="text-gray-400 text-sm mb-1">
+                                {event.date}
+                              </p>
+                              <p className="text-gray-400 text-sm mb-1">
+                                {event.venue}
+                              </p>
+                              <p className="text-gray-400 text-sm mb-1">
+                                {event.shortDesc}
+                              </p>
+                              <p className="text-gray-400 text-xs mb-1">
+                                {event.currentRegistrations || 0} /{" "}
+                                {event.strength || 0} registered
+                              </p>
+
+                              <div className="flex gap-2 mt-3">
+                                {isEventFilled(event) ? (
+                                  <button
+                                    disabled
+                                    className="bg-gray-600 text-gray-300 cursor-not-allowed py-2 px-4 rounded"
+                                  >
+                                    Registrations Filled
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() =>
+                                      handleRegisterClick(event)
+                                    }
+                                    className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition"
+                                  >
+                                    Register
+                                  </button>
+                                )}
+
+                                <button
+                                  onClick={() =>
+                                    setViewStates((prev) => ({
+                                      ...prev,
+                                      [event.id || event._id]:
+                                        !prev[event.id || event._id],
+                                    }))
+                                  }
+                                  className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition"
+                                >
+                                  {viewStates[event.id || event._id]
+                                    ? "Hide Details"
+                                    : "View"}
+                                </button>
+                              </div>
+
+                              {viewStates[event.id || event._id] && (
+                                <div className="mt-4 bg-gray-700/50 p-3 rounded-lg text-gray-300 text-sm space-y-2">
+                                  <p>
+                                    <strong>About Event</strong>{" "}
+                                    {event.about}
+                                  </p>
+                                  <p>
+                                    <strong>Learning Outcomes</strong>{" "}
+                                    {event.learning}
+                                  </p>
+                                  <p>
+                                    <strong>Strength</strong>{" "}
+                                    {event.strength}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </section>
+
+                    {/* Past + Feedback */}
+                    <section id="past-events" className="mb-12">
+                      <h3 className="text-2xl font-bold mb-6 text-blue-400">
+                        Past Events
+                      </h3>
+
+                      {pastEvents.length === 0 ? (
+                        <p className="text-gray-400">
+                          No past events yet.
+                        </p>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                          {applyFilters(pastEvents).map((event) => (
+                            <div
+                              key={event.id || event._id}
+                              className="bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg hover:shadow-gray-500/30 transition-all"
+                            >
+                              <h4 className="text-lg font-semibold text-white mb-2">
+                                {event.name}
+                              </h4>
+                              <p className="text-gray-400 text-sm mb-1">
+                                {event.date}
+                              </p>
+                              <p className="text-gray-400 text-sm mb-1">
+                                {event.venue}
+                              </p>
+                              <p className="text-gray-400 text-sm mb-1">
+                                Strength: {event.strength}
+                              </p>
+                              <p className="text-gray-400 text-sm mb-2">
+                                {event.shortDesc}
+                              </p>
+
+                              {/* Feedback input */}
+                              <div className="mt-3">
+                                <label className="block text-xs text-gray-400 mb-1">
+                                  Your Feedback
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  placeholder="Share your experience about this event"
+                                  value={
+                                    feedbackInputs[event.id || event._id] ||
+                                    ""
+                                  }
+                                  onChange={(e) =>
+                                    setFeedbackInputs((prev) => ({
+                                      ...prev,
+                                      [event.id || event._id]:
+                                        e.target.value,
+                                    }))
+                                  }
+                                  className="w-full p-2 rounded bg-gray-900 border border-gray-600 text-white text-sm focus:border-blue-500 focus:outline-none"
+                                />
+
+                                <div className="flex justify-between items-center mt-2">
+                                  <button
+                                    onClick={() =>
+                                      submitFeedback(event.id || event._id)
+                                    }
+                                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded transition"
+                                  >
+                                    Submit Feedback
+                                  </button>
+
+                                  <button
+                                    onClick={() =>
+                                      loadFeedbackForEvent(
+                                        event.id || event._id
+                                      )
+                                    }
+                                    className="text-xs text-blue-300 underline hover:text-blue-200"
+                                  >
+                                    {loadingFeedback[event.id || event._id]
+                                      ? "Loading..."
+                                      : "View Feedbacks"}
+                                  </button>
+                                </div>
+
+                                {/* Feedback list */}
+                                {feedbackList[event.id || event._id] &&
+                                  feedbackList[event.id || event._id]
+                                    .length > 0 && (
+                                    <div className="mt-3 border-t border-gray-700 pt-2 max-h-32 overflow-y-auto">
+                                      <p className="text-xs text-gray-400 mb-1">
+                                        Feedback from participants
+                                      </p>
+
+                                      {feedbackList[
+                                        event.id || event._id
+                                      ].map((fb) => (
+                                        <div key={fb._id} className="mb-2">
+                                          <p className="text-xs text-blue-300 font-semibold">
+                                            {fb.userName || "User"}
+                                          </p>
+                                          <p className="text-xs text-gray-200">
+                                            {fb.feedback}
+                                          </p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  </>
+                )}
+
+                {/* Registered tab */}
+                {activeTab === "registered" && (
+                  <section id="registered" className="mb-12">
+                    <h3 className="text-2xl font-bold mb-6 text-blue-400">
+                      My Registered Events
+                    </h3>
+
+                    {applyFilters(registeredEvents).length === 0 ? (
+                      <p className="text-gray-400">
+                        You have not registered for any events yet.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {applyFilters(registeredEvents).map((event) => (
+                          <div
+                            key={event._id || event.id}
+                            className="bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg hover:shadow-blue-400/20 transition-all"
+                          >
+                            <h4 className="text-lg font-semibold text-white mb-2">
+                              {event.name}
+                            </h4>
+                            <p className="text-gray-400 text-sm mb-1">
+                              {event.date}
+                            </p>
+                            <p className="text-gray-400 text-sm mb-1">
+                              {event.venue}
+                            </p>
+                            <p className="text-gray-400 text-sm mb-1">
+                              {event.shortDesc}
+                            </p>
+                            <p className="text-xs text-green-400 font-semibold">
+                              ✅ You are registered for this event
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {/* Attended tab */}
+                {activeTab === "attended" && (
+                  <section className="mb-12">
+                    <h3 className="text-2xl font-bold mb-6 text-blue-400">
+                      Attended Events
+                    </h3>
+
+                    {applyFilters(attendedEvents).length === 0 ? (
+                      <p className="text-gray-400">
+                        You have not attended any events yet.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {applyFilters(attendedEvents).map((event) => (
+                          <div
+                            key={event._id || event.id}
+                            className="bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg hover:shadow-gray-500/30 transition-all"
+                          >
+                            <h4 className="text-lg font-semibold text-white mb-2">
+                              {event.name}
+                            </h4>
+                            <p className="text-gray-400 text-sm mb-1">
+                              {event.date}
+                            </p>
+                            <p className="text-gray-400 text-sm mb-1">
+                              {event.venue}
+                            </p>
+                            <p className="text-gray-400 text-sm mb-1">
+                              Strength: {event.strength}
+                            </p>
+                            <p className="text-gray-400 text-sm mb-2">
+                              {event.shortDesc}
+                            </p>
+                            <p className="text-xs text-green-400 font-semibold">
+                              ✅ Marked as attended (past event)
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {/* Notifications */}
+                {activeTab === "notifications" && (
+                  <section>
+                    <div className="mb-6 flex items-center justify-between">
+                      <h3 className="text-2xl font-bold text-blue-400">
+                        Notifications ({notificationsData.length})
+                      </h3>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={handleNotifications}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
+                        >
+                          🔄 Refresh
+                        </button>
+                        <button
+                          onClick={handleMarkAllRead}
+                          className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition text-sm"
+                        >
+                          Mark all as read
+                        </button>
+                      </div>
+                    </div>
+
+                    {notificationsData.length === 0 ? (
+                      <div className="bg-gray-800/80 border border-gray-700 p-8 rounded-2xl text-center">
+                        <p className="text-gray-400 text-lg">
+                          ✅ No notifications right now
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {notificationsData.map((n) => (
+                          <div
+                            key={n._id}
+                            className={`bg-gray-800/80 border-2 p-6 rounded-2xl shadow-lg transition-all ${n.isRead
+                              ? "border-gray-700 hover:shadow-gray-500/20"
+                              : "border-blue-500 hover:shadow-blue-500/30"
+                              }`}
+                          >
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                                <h4 className="text-xl font-semibold text-white mb-1">
+                                  {n.title}
+                                </h4>
+                                <p className="text-gray-300 text-sm whitespace-pre-line">
+                                  {n.message}
+                                </p>
+                                {n.eventId && (
+                                  <p className="text-gray-400 text-xs mt-2">
+                                    Related to event ID:{" "}
+                                    <span className="text-blue-400">
+                                      {n.eventId}
+                                    </span>
+                                  </p>
+                                )}
+                              </div>
+                              <span
+                                className={`text-xs px-3 py-1 rounded-full ${n.isRead
+                                  ? "bg-gray-600 text-white"
+                                  : "bg-blue-600 text-white"
+                                  }`}
+                              >
+                                {n.isRead ? "READ" : "NEW"}
+                              </span>
+                            </div>
+
+                            <div className="mb-3 text-xs text-gray-400">
+                              {n.createdAt && (
+                                <span>
+                                  {new Date(n.createdAt).toLocaleString()}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex gap-3">
+                              {!n.isRead && (
+                                <button
+                                  onClick={() => handleMarkOneRead(n._id)}
+                                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-sm"
+                                >
+                                  ✓ Mark as read
+                                </button>
+                              )}
+
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {/* Confirmation Modal */}
+      {showConfirm && confirmEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 border border-gray-700 p-6 rounded-2xl max-w-lg w-11/12">
+            <h3 className="text-xl font-bold text-blue-400 mb-3">
+              Confirm Registration
+            </h3>
+
+            <p className="mb-2">
+              Are you sure you want to register for{" "}
+              <span className="font-semibold">
+                {confirmEvent.name}
+              </span>
+              ?
+            </p>
+
+            <p className="text-gray-300 mb-1">{confirmEvent.date}</p>
+            <p className="text-gray-300 mb-1">{confirmEvent.venue}</p>
+            <p className="text-gray-300 mb-2">
+              {confirmEvent.shortDesc}
+            </p>
+
+            {confirmEvent.about && (
+              <p className="text-gray-300 text-sm mb-1">
+                <strong>About:</strong> {confirmEvent.about}
+              </p>
+            )}
+
+            {confirmEvent.learning && (
+              <p className="text-gray-300 text-sm mb-1">
+                <strong>Learning Outcomes:</strong>{" "}
+                {confirmEvent.learning}
+              </p>
+            )}
+
+            {confirmEvent.strength && (
+              <p className="text-gray-300 text-sm mb-3">
+                <strong>Strength:</strong> {confirmEvent.strength}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => {
+                  setShowConfirm(false);
+                  setConfirmEvent(null);
+                }}
+                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition"
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
-                className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded transition"
+
+              <button
+                onClick={confirmRegistration}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
               >
-                {editEvent ? "Update Event" : "Submit Event"}
+                Yes, Register
               </button>
             </div>
-          </form>
+          </div>
         </div>
       )}
-
-      <div className="px-10 pb-12">
-        <div className="flex flex-col md:flex-row gap-10 relative">
-          {/* Browse by Date (Rightmost corner) */}
-          <div className="absolute right-0 top-0 md:top-[-50px] flex flex-col items-end">
-            <label className="text-blue-400 text-sm mb-1 font-semibold">
-              📅 Browse by Date
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {date && (
-              <button
-                onClick={() => setDate("")}
-                className="text-red-400 text-xs mt-2 underline hover:text-red-500"
-              >
-                Clear Filter
-              </button>
-            )}
-          </div>
-
-          <div className="flex-1">
-            {/* Upcoming Events */}
-            <section id="browse" className="mb-12">
-              <h3 className="text-2xl font-bold mb-6 text-blue-400">Upcoming Events</h3>
-              {filteredUpcomingEvents.length === 0 ? (
-                <p className="text-gray-400">No upcoming events for this date.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredUpcomingEvents.map((event) => (
-                    <div
-                      key={event._id}
-                      className="bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg hover:shadow-blue-400/20 transition-all"
-                    >
-                      <h4 className="text-lg font-semibold text-white mb-2">{event.name}</h4>
-                      <p className="text-gray-400 text-sm mb-1">📅 {event.date}</p>
-                      <p className="text-gray-400 text-sm mb-1">📍 {event.venue}</p>
-                      <p className="text-gray-400 text-sm mb-1">📝 {event.shortDesc}</p>
-
-                      <div className="flex gap-2 mt-3">
-                        <button
-                          onClick={() => handleRegister(event)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition"
-                        >
-                          Register
-                        </button>
-                        <button
-                          onClick={() =>
-                            setViewStates((prev) => ({ ...prev, [event._id]: !prev[event._id] }))
-                          }
-                          className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition"
-                        >
-                          {viewStates[event._id] ? "Hide Details" : "View"}
-                        </button>
-                      </div>
-
-                      {viewStates[event._id] && (
-                        <div className="mt-4 bg-gray-700/50 p-3 rounded-lg text-gray-300 text-sm space-y-2">
-                          <p><strong>About Event:</strong> {event.about}</p>
-                          <p><strong>Learning Outcomes:</strong> {event.learning}</p>
-                          <p><strong>Full Description:</strong> {event.shortDesc}</p>
-                          <p><strong>Strength:</strong> {event.strength}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            {/* Past Events */}
-            <section id="past-events" className="mb-12">
-              <h3 className="text-2xl font-bold mb-6 text-blue-400">Past Events</h3>
-              {pastEvents.length === 0 ? (
-                <p className="text-gray-400">No past events yet.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {pastEvents.map((event) => (
-                    <div
-                      key={event._id}
-                      className="bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg hover:shadow-gray-500/30 transition-all"
-                    >
-                      <h4 className="text-lg font-semibold text-white mb-2">{event.name}</h4>
-                      <p className="text-gray-400 text-sm mb-1">📅 {event.date}</p>
-                      <p className="text-gray-400 text-sm mb-1">📍 {event.venue}</p>
-                      <p className="text-gray-400 text-sm mb-1">👥 Strength: {event.strength}</p>
-                      <p className="text-gray-400 text-sm mb-1">📝 {event.shortDesc}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
