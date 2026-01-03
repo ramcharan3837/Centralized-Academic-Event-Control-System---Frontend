@@ -2,6 +2,10 @@
   "name": "event-frontend",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "dependencies": {
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
@@ -37,10 +41,7 @@
       "last 1 safari version"
     ]
   },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
-  },
+  
   "description": "",
   "main": "postcss.config.js",
   "keywords": [],
