@@ -1,1 +1,3 @@
-export const base_url = "http://localhost:4000/";
+// for production on Render
+export const base_url = "https://centralized-academic-event-control.onrender.com/";
+
