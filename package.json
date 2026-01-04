@@ -7,14 +7,18 @@
     "npm": ">=9.0.0"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "react": "^18.0.0",
     "react-calendar": "^6.0.0",
+    "react-datepicker": "^9.1.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.10.0",
     "react-scripts": "^5.0.1",
@@ -41,7 +45,6 @@
       "last 1 safari version"
     ]
   },
-  
   "description": "",
   "main": "postcss.config.js",
   "keywords": [],

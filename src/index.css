@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Make react-datepicker popup adapt better on small screens */
+.react-datepicker-popper {
+  width: 100%;
+  max-width: 320px;        /* adjust as needed */
+}
+
+@media (max-width: 480px) {
+  .react-datepicker-popper {
+    left: 50% !important;
+    transform: translateX(-50%) !important; /* center it */
+  }
+
+  .react-datepicker {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .react-datepicker__month-container {
+    width: 100%;
+  }
+}
