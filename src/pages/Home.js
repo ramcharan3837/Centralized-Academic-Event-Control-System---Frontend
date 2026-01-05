@@ -3,6 +3,8 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import axios from "axios";
 import { base_url } from "../components/baseUrl";
+import { useNavigate } from "react-router-dom";
+
 
 
 function Home() {
@@ -82,9 +84,10 @@ function Home() {
 
 // Event Modal Component
 function EventModal({ event, onClose }) {
+  const navigate = useNavigate();          // add this line
+
   const handleRegister = () => {
-    // Redirect to login page
-    window.location.href = "/login";
+    navigate("/login");                    // instead of window.location.href = "/login";
   };
 
   return (
