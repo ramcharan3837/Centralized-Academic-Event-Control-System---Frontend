@@ -88,7 +88,7 @@ function EventCalendar({ events = [], onDateClick }) {
       <button
         key={day}
         onClick={() => handleDateClick(day)}
-        className={`aspect-square p-2 rounded-lg text-sm font-medium transition-all hover:scale-105 hover:shadow-lg relative
+        className={`aspect-square  p-1 sm:p-2 rounded-lg text-[10px] sm:text-sm font-medium transition-all hover:scale-105 hover:shadow-lg relative
           ${isToday ? "ring-2 ring-blue-500" : ""}
           ${isSelected ? "bg-blue-600 text-white" : "bg-gray-800/50 text-gray-300"}
           ${
@@ -120,8 +120,9 @@ function EventCalendar({ events = [], onDateClick }) {
   const selectedDayEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-gray-700/50 rounded-2xl shadow-2xl p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-md border border-gray-700/50 rounded-2xl shadow-2xl p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-3 sm:mb-6">
+
         <div className="flex items-center gap-3">
           <div className="bg-blue-600/20 p-2 rounded-lg">
             <svg
@@ -217,7 +218,7 @@ function EventCalendar({ events = [], onDateClick }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-2 mb-2">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-1 sm:mb-2">
         {dayNames.map((day) => (
           <div
             key={day}
@@ -228,7 +229,7 @@ function EventCalendar({ events = [], onDateClick }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-2 mb-4">{calendarDays}</div>
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3 sm:mb-4">{calendarDays}</div>
 
       <div className="flex items-center justify-center gap-6 pt-4 border-t border-gray-700/50 text-xs">
         <div className="flex items-center gap-2">
@@ -290,7 +291,7 @@ function EventCalendar({ events = [], onDateClick }) {
 function UserTable({ rows, onChangeRole, onViewProfile }) {
   return (
     <div className="overflow-x-auto bg-gray-800/80 border border-gray-700 rounded-2xl">
-      <table className="min-w-full text-sm">
+      <table className="min-w-full text-xs sm:text-sm">
         <thead className="bg-gray-900/80">
           <tr>
             <th className="px-4 py-2 text-left text-gray-300">
@@ -976,121 +977,119 @@ function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       {/* Navbar */}
-      <nav className="bg-gray-950 bg-opacity-80 backdrop-blur-md text-white px-8 py-4 flex justify-between items-center shadow-lg border-b border-gray-700">
-        <h1 className="text-2xl font-bold text-blue-400">
-          Admin Dashboard
-        </h1>
-        <div className="flex space-x-8 text-lg">
-          <button
-            onClick={() => setActiveTab("calendar")}
-            className={`hover:text-blue-300 transition ${
-              activeTab === "calendar"
-                ? "text-blue-400 font-bold"
-                : ""
-            }`}
-          >
-            Calendar
-          </button>
-          <button
-            onClick={() => setActiveTab("create")}
-            className={`hover:text-blue-300 transition ${
-              activeTab === "create"
-                ? "text-blue-400 font-bold"
-                : ""
-            }`}
-          >
-            Create Event
-          </button>
-          <button
-            onClick={() => setActiveTab("pending")}
-            className={`hover:text-blue-300 transition ${
-              activeTab === "pending"
-                ? "text-blue-400 font-bold"
-                : ""
-            }`}
-          >
-            Pending ({pendingEvents.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("approved")}
-            className={`hover:text-blue-300 transition ${
-              activeTab === "approved"
-                ? "text-blue-400 font-bold"
-                : ""
-            }`}
-          >
-            All Events ({approvedEvents.length})
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("users");
-              getAllUsers();
-            }}
-            className={`hover:text-blue-300 transition ${
-              activeTab === "users" ? "text-blue-400 font-bold" : ""
-            }`}
-          >
-            Users
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("venues");
-              loadVenues();
-            }}
-            className={`hover:text-blue-300 transition ${
-              activeTab === "venues"
-                ? "text-blue-400 font-bold"
-                : ""
-            }`}
-          >
-            Venues
-          </button>
-          <button
-            onClick={() => {
-              handleNotifications();
-              setActiveTab("notifications");
-            }}
-            className={`hover:text-red-400 transition ${
-              activeTab === "notifications"
-                ? "text-red-400 font-bold"
-                : ""
-            }`}
-          >
-            Notifications
-          </button>
-          <button
-            onClick={handleLogout}
-            className="hover:text-red-400 transition"
-          >
-            Logout
-          </button>
-        </div>
-      </nav>
+    <nav className="bg-gray-950/80 backdrop-blur-md text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-gray-700 shadow-lg">
+  <div className="flex flex-wrap items-center justify-between gap-3">
+    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400">
+      Admin Dashboard
+    </h1>
+
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm md:text-base">
+      <button
+        onClick={() => setActiveTab("calendar")}
+        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+          activeTab === "calendar" ? "text-blue-400 font-bold" : ""
+        }`}
+      >
+        Calendar
+      </button>
+
+      <button
+        onClick={() => setActiveTab("create")}
+        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+          activeTab === "create" ? "text-blue-400 font-bold" : ""
+        }`}
+      >
+        Create Event
+      </button>
+
+      <button
+        onClick={() => setActiveTab("pending")}
+        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+          activeTab === "pending" ? "text-blue-400 font-bold" : ""
+        }`}
+      >
+        Pending ({pendingEvents.length})
+      </button>
+
+      <button
+        onClick={() => setActiveTab("approved")}
+        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+          activeTab === "approved" ? "text-blue-400 font-bold" : ""
+        }`}
+      >
+        All Events ({approvedEvents.length})
+      </button>
+
+      <button
+        onClick={() => {
+          setActiveTab("users");
+          getAllUsers();
+        }}
+        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+          activeTab === "users" ? "text-blue-400 font-bold" : ""
+        }`}
+      >
+        Users
+      </button>
+
+      <button
+        onClick={() => {
+          setActiveTab("venues");
+          loadVenues();
+        }}
+        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+          activeTab === "venues" ? "text-blue-400 font-bold" : ""
+        }`}
+      >
+        Venues
+      </button>
+
+      <button
+        onClick={() => {
+          handleNotifications();
+          setActiveTab("notifications");
+        }}
+        className={`px-2 py-1 rounded hover:text-red-400 transition ${
+          activeTab === "notifications" ? "text-red-400 font-bold" : ""
+        }`}
+      >
+        Notifications
+      </button>
+
+      <button
+        onClick={handleLogout}
+        className="px-2 py-1 rounded hover:text-red-400 transition"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+
 
       {/* Hero Section */}
-      <section className="text-center py-12">
-        <h2 className="text-4xl font-bold text-blue-400 tracking-wide">
-          Welcome, <span className="text-white">Admin</span>
-        </h2>
-        <p className="text-gray-400 mt-3 text-lg">
-          {activeTab === "calendar" &&
-            "View all events in calendar view"}
-          {activeTab === "create" &&
-            "Create and manage events"}
-          {activeTab === "pending" &&
-            "Review and approve events submitted by users"}
-          {activeTab === "approved" &&
-            "Manage all published events"}
-          {activeTab === "users" &&
-            "Manage users, roles, and branches"}
-          {activeTab === "venues" &&
-            "Create and manage reusable venues"}
-          {activeTab === "notifications" &&
-            "View all your notifications"}
-        </p>
-      </section>
+ <section className="text-center py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-400 tracking-wide">
+    Welcome, <span className="text-white">Admin</span>
+  </h2>
+  <p className="text-gray-400 mt-2 sm:mt-3 text-sm sm:text-base">
+    {activeTab === "calendar" && "View all events in calendar view"}
+    {activeTab === "create" && "Create and manage events"}
+    {activeTab === "pending" &&
+      "Review and approve events submitted by users"}
+    {activeTab === "approved" && "Manage all published events"}
+    {activeTab === "users" &&
+      "Manage users, roles, and branches"}
+    {activeTab === "venues" &&
+      "Create and manage reusable venues"}
+    {activeTab === "notifications" &&
+      "View all your notifications"}
+  </p>
+</section>
 
-      <div className="px-10 pb-12">
+
+      <div className="px-4 sm:px-6 lg:px-10 pb-10">
         {/* Calendar */}
         {activeTab === "calendar" && (
           <section>
@@ -1106,18 +1105,16 @@ function AdminDashboard() {
         )}
 
         {/* Create Event */}
-        {activeTab === "create" && (
-          <section>
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-6 bg-gray-800/80 border border-gray-700 p-6 rounded-2xl shadow-lg">
-                <h3 className="text-2xl font-bold text-blue-400 mb-2">
-                  {editEvent ? "Edit Event" : "Create New Event"}
-                </h3>
-                <p className="text-gray-400 text-sm mb-4">
-                  Admin events are automatically approved and
-                  published.
-                </p>
-
+       {activeTab === "create" && (
+  <section>
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-6 bg-gray-800/80 border border-gray-700 p-4 sm:p-6 rounded-2xl shadow-lg">
+        <h3 className="text-xl sm:text-2xl font-bold text-blue-400 mb-2">
+          {editEvent ? "Edit Event" : "Create New Event"}
+        </h3>
+        <p className="text-gray-400 text-xs sm:text-sm mb-4">
+          Admin events are automatically approved and published.
+        </p>
                 <form
                   onSubmit={handleSaveEvent}
                   className="space-y-4"
@@ -1241,443 +1238,382 @@ function AdminDashboard() {
 
         {/* Pending Events */}
         {activeTab === "pending" && (
-          <section>
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-yellow-400">
-                Pending Approval ({pendingEvents.length})
-              </h3>
-              <button
-                onClick={getPendingEvents}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
-              >
-                Refresh
-              </button>
-            </div>
-            {pendingEvents.length === 0 ? (
-              <div className="bg-gray-800/80 border border-gray-700 p-8 rounded-2xl text-center">
-                <p className="text-gray-400 text-lg">
-                  No pending events to review
+  <section>
+    {/* Header */}
+    <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <h3 className="text-xl sm:text-2xl font-bold text-yellow-400">
+        Pending Approval ({pendingEvents.length})
+      </h3>
+      <button
+        onClick={getPendingEvents}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+      >
+        Refresh
+      </button>
+    </div>
+
+    {/* Empty state */}
+    {pendingEvents.length === 0 ? (
+      <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
+        <p className="text-gray-400 text-sm sm:text-lg">
+          No pending events to review
+        </p>
+      </div>
+    ) : (
+      /* Cards grid */
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+        {pendingEvents.map((event) => (
+          <div
+            key={event._id}
+            className="bg-gray-800/80 border-2 border-yellow-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-yellow-600/30 transition-all"
+          >
+            {/* Top row: title + status */}
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h4 className="text-base sm:text-lg font-semibold text-white mb-1">
+                  {event.name}
+                </h4>
+                <p className="text-gray-400 text-xs sm:text-sm">
+                  Submitted by{" "}
+                  <span className="text-blue-400">
+                    {event.createdBy?.fullName || "Unknown"}
+                  </span>
+                </p>
+                <p className="text-gray-400 text-[11px] sm:text-xs">
+                  Email: {event.createdBy?.email || "NA"}
                 </p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {pendingEvents.map((event) => (
-                  <div
-                    key={event._id}
-                    className="bg-gray-800/80 border-2 border-yellow-600 p-6 rounded-2xl shadow-lg hover:shadow-yellow-600/30 transition-all"
-                  >
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h4 className="text-xl font-semibold text-white mb-2">
-                          {event.name}
-                        </h4>
-                        <p className="text-gray-400 text-sm">
-                          Submitted by{" "}
-                          <span className="text-blue-400">
-                            {event.createdBy?.fullName ||
-                              "Unknown"}
-                          </span>
-                        </p>
-                        <p className="text-gray-400 text-sm">
-                          Email: {event.createdBy?.email || "NA"}
-                        </p>
-                      </div>
-                      <span className="bg-yellow-600 text-white text-xs px-3 py-1 rounded-full">
-                        PENDING
-                      </span>
-                    </div>
+              <span className="bg-yellow-600 text-white text-[11px] sm:text-xs px-3 py-1 rounded-full">
+                PENDING
+              </span>
+            </div>
 
-                    <div className="space-y-2 mb-4 text-sm text-gray-300">
-                      <p>
-                        <strong>Date:</strong> {event.date}
-                      </p>
-                      <p>
-                        <strong>Venue:</strong> {event.venue}
-                      </p>
-                      <p>
-                        <strong>Strength:</strong>{" "}
-                        {event.strength}
-                      </p>
-                      <p>
-                        <strong>Short Desc:</strong>{" "}
-                        {event.shortDesc}
-                      </p>
-                    </div>
+            {/* Basic details */}
+            <div className="space-y-1.5 mb-3 text-xs sm:text-sm text-gray-300">
+              <p>
+                <strong className="text-white">Date:</strong> {event.date}
+              </p>
+              <p>
+                <strong className="text-white">Venue:</strong> {event.venue}
+              </p>
+              <p>
+                <strong className="text-white">Strength:</strong>{" "}
+                {event.strength}
+              </p>
+              <p>
+                <strong className="text-white">Short Desc:</strong>{" "}
+                {event.shortDesc}
+              </p>
+            </div>
 
-                    <button
-                      onClick={() =>
-                        setViewStates((prev) => ({
-                          ...prev,
-                          [event._id]: !prev[event._id],
-                        }))
-                      }
-                      className="text-blue-400 hover:text-blue-300 text-sm mb-3 underline"
-                    >
-                      {viewStates[event._id]
-                        ? "Hide Full Details"
-                        : "Show Full Details"}
-                    </button>
+            {/* Toggle details */}
+            <button
+              onClick={() =>
+                setViewStates((prev) => ({
+                  ...prev,
+                  [event._id]: !prev[event._id],
+                }))
+              }
+              className="text-blue-400 hover:text-blue-300 text-xs sm:text-sm mb-3 underline"
+            >
+              {viewStates[event._id] ? "Hide Full Details" : "Show Full Details"}
+            </button>
 
-                    {viewStates[event._id] && (
-                      <div className="bg-gray-700/50 p-4 rounded-lg text-gray-300 text-sm space-y-3 mb-4">
-                        <div>
-                          <strong className="text-white">
-                            About Event
-                          </strong>
-                          <p className="mt-1">{event.about}</p>
-                        </div>
-                        <div>
-                          <strong className="text-white">
-                            Learning Outcomes
-                          </strong>
-                          <p className="mt-1">
-                            {event.learning}
-                          </p>
-                        </div>
-                        <div>
-                          <strong className="text-white">
-                            Submitted At
-                          </strong>
-                          <p className="mt-1">
-                            {event.createdAt
-                              ? new Date(
-                                  event.createdAt
-                                ).toLocaleString()
-                              : "-"}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => handleApprove(event._id)}
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(event._id)}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition font-semibold"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            {/* Extra details */}
+            {viewStates[event._id] && (
+              <div className="bg-gray-700/50 p-3 sm:p-4 rounded-lg text-gray-300 text-[11px] sm:text-sm space-y-3 mb-3">
+                <div>
+                  <strong className="text-white block">About Event</strong>
+                  <p className="mt-1">{event.about}</p>
+                </div>
+                <div>
+                  <strong className="text-white block">Learning Outcomes</strong>
+                  <p className="mt-1">{event.learning}</p>
+                </div>
+                <div>
+                  <strong className="text-white block">Submitted At</strong>
+                  <p className="mt-1">
+                    {event.createdAt
+                      ? new Date(event.createdAt).toLocaleString()
+                      : "-"}
+                  </p>
+                </div>
               </div>
             )}
-          </section>
-        )}
+
+            {/* Approve / Reject buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 mt-2">
+              <button
+                onClick={() => handleApprove(event._id)}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleReject(event._id)}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+)}
+
 
         {/* Approved Events */}
         {activeTab === "approved" && (
-          <section>
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-green-400">
-                Approved Events ({approvedEvents.length})
-              </h3>
-              <button
-                onClick={getApprovedEvents}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
-              >
-                Refresh
-              </button>
-            </div>
+  <section className="space-y-8">
+    {/* Upcoming */}
+    <div>
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h3 className="text-xl sm:text-2xl font-bold text-green-400">
+          Upcoming Events ({upcomingEvents.length})
+        </h3>
+        <button
+          onClick={getApprovedEvents}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+        >
+          Refresh
+        </button>
+      </div>
 
-            {approvedEvents.length === 0 ? (
-              <div className="bg-gray-800/80 border border-gray-700 p-8 rounded-2xl text-center">
-                <p className="text-gray-400 text-lg">
-                  No approved events yet
+      {upcomingEvents.length === 0 ? (
+        <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
+          <p className="text-gray-400 text-sm sm:text-lg">
+            No approved events yet
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {upcomingEvents.map((event) => (
+            <div
+              key={event._id}
+              className="bg-gray-800/80 border border-green-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="text-base sm:text-lg font-semibold text-white">
+                  {event.name}
+                </h4>
+                <span className="bg-green-600 text-white text-[11px] sm:text-xs px-2 py-1 rounded-full">
+                  UPCOMING
+                </span>
+              </div>
+
+              <div className="space-y-1 mb-2 text-xs sm:text-sm text-gray-300">
+                <p>{event.date}</p>
+                <p>{event.venue}</p>
+                <p>{event.strength} participants</p>
+                <p className="text-[11px] sm:text-xs text-gray-500">
+                  Created by {event.createdBy?.fullName || "Unknown"}
                 </p>
               </div>
-            ) : (
-              <div className="space-y-10">
-                {/* Upcoming */}
-                <div>
-                  <h3 className="text-2xl font-bold text-green-400 mb-4">
-                    Upcoming Events ({upcomingEvents.length})
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {upcomingEvents.map((event) => (
-                      <div
-                        key={event._id}
-                        className="bg-gray-800/80 border border-green-600 p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
-                      >
-                        <div className="flex justify-between items-start mb-3">
-                          <h4 className="text-lg font-semibold text-white">
-                            {event.name}
-                          </h4>
-                          <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
-                            UPCOMING
-                          </span>
-                        </div>
-                        <div className="space-y-1 text-sm text-gray-300 mb-3">
-                          <p>{event.date}</p>
-                          <p>{event.venue}</p>
-                          <p>{event.strength} participants</p>
-                          <p className="text-xs text-gray-500">
-                            Created by{" "}
-                            {event.createdBy?.fullName ||
-                              "Unknown"}
-                          </p>
-                        </div>
 
-                        <button
-                          onClick={() =>
-                            setViewStates((prev) => ({
-                              ...prev,
-                              [event._id]: !prev[event._id],
-                            }))
-                          }
-                          className="text-blue-400 hover:text-blue-300 text-sm underline"
-                        >
-                          {viewStates[event._id]
-                            ? "Hide Details"
-                            : "View Details"}
-                        </button>
+              <button
+                onClick={() =>
+                  setViewStates((prev) => ({
+                    ...prev,
+                    [event._id]: !prev[event._id],
+                  }))
+                }
+                className="text-blue-400 hover:text-blue-300 text-xs sm:text-sm underline mb-2"
+              >
+                {viewStates[event._id] ? "Hide Details" : "View Details"}
+              </button>
 
-                        {viewStates[event._id] && (
-                          <div className="mt-3 bg-gray-700/50 p-3 rounded-lg text-gray-300 text-sm space-y-2">
-                            <p>
-                              <strong>Short Desc:</strong>{" "}
-                              {event.shortDesc}
-                            </p>
-                            <p>
-                              <strong>About:</strong>{" "}
-                              {event.about}
-                            </p>
-                            <p>
-                              <strong>Learning:</strong>{" "}
-                              {event.learning}
-                            </p>
-                            {event.approvedAt && (
-                              <p className="text-xs text-green-400">
-                                Approved{" "}
-                                {new Date(
-                                  event.approvedAt
-                                ).toLocaleString()}
-                              </p>
-                            )}
-                          </div>
-                        )}
-
-                        <div className="flex flex-col gap-2 mt-3">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() =>
-                                handleEditClick(event)
-                              }
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-sm"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDeleteApproved(event._id)
-                              }
-                              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                          <button
-                            onClick={() =>
-                              openAttendanceModal(event)
-                            }
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 rounded self-start"
-                          >
-                            Registrations / Attendance
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              {viewStates[event._id] && (
+                <div className="mt-2 bg-gray-700/50 p-3 rounded-lg text-[11px] sm:text-sm text-gray-300 space-y-2">
+                  <p>
+                    <strong className="text-white">Short Desc:</strong>{" "}
+                    {event.shortDesc}
+                  </p>
+                  <p>
+                    <strong className="text-white">About:</strong>{" "}
+                    {event.about}
+                  </p>
+                  <p>
+                    <strong className="text-white">Learning:</strong>{" "}
+                    {event.learning}
+                  </p>
+                  {event.approvedAt && (
+                    <p className="text-[11px] sm:text-xs text-green-400">
+                      Approved{" "}
+                      {new Date(event.approvedAt).toLocaleString()}
+                    </p>
+                  )}
                 </div>
+              )}
 
-                {/* Past */}
-                <div>
-                  <h3 className="text-2xl font-bold text-green-400 mb-4">
-                    Past Events ({pastEvents.length})
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {pastEvents.map((event) => (
-                      <div
-                        key={event._id}
-                        className="bg-gray-800/80 border border-green-600 p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
-                      >
-                        <div className="flex justify-between items-start mb-3">
-                          <h4 className="text-lg font-semibold text-white">
-                            {event.name}
-                          </h4>
-                          <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
-                            PAST
-                          </span>
-                        </div>
-                        <div className="space-y-1 text-sm text-gray-300 mb-3">
-                          <p>{event.date}</p>
-                          <p>{event.venue}</p>
-                          <p>{event.strength} participants</p>
-                          <p className="text-xs text-gray-500">
-                            Created by{" "}
-                            {event.createdBy?.fullName ||
-                              "Unknown"}
-                          </p>
-                        </div>
+              {/* Actions + Attendance */}
+              <div className="flex flex-col gap-2 mt-3">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={() => handleEditClick(event)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteApproved(event._id)}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <button
+                  onClick={() => openAttendanceModal(event)}
+                  className="self-start bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
+                >
+                  Registrations & Attendance
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
 
-                        <button
-                          onClick={() =>
-                            setViewStates((prev) => ({
-                              ...prev,
-                              [event._id]: !prev[event._id],
-                            }))
-                          }
-                          className="text-blue-400 hover:text-blue-300 text-sm underline"
-                        >
-                          {viewStates[event._id]
-                            ? "Hide Details"
-                            : "View Details"}
-                        </button>
+    {/* Past */}
+    <div>
+      <h3 className="text-xl sm:text-2xl font-bold text-green-400 mb-4">
+        Past Events ({pastEvents.length})
+      </h3>
+      {pastEvents.length === 0 ? (
+        <p className="text-gray-400 text-sm sm:text-base">
+          No past events yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {pastEvents.map((event) => (
+            <div
+              key={event._id}
+              className="bg-gray-800/80 border border-green-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="text-base sm:text-lg font-semibold text-white">
+                  {event.name}
+                </h4>
+                <span className="bg-green-600 text-white text-[11px] sm:text-xs px-2 py-1 rounded-full">
+                  PAST
+                </span>
+              </div>
 
-                        {viewStates[event._id] && (
-                          <div className="mt-3 bg-gray-700/50 p-3 rounded-lg text-gray-300 text-sm space-y-2">
-                            <p>
-                              <strong>Short Desc:</strong>{" "}
-                              {event.shortDesc}
-                            </p>
-                            <p>
-                              <strong>About:</strong>{" "}
-                              {event.about}
-                            </p>
-                            <p>
-                              <strong>Learning:</strong>{" "}
-                              {event.learning}
-                            </p>
-                            {event.approvedAt && (
-                              <p className="text-xs text-green-400">
-                                Approved{" "}
-                                {new Date(
-                                  event.approvedAt
-                                ).toLocaleString()}
-                              </p>
-                            )}
-                          </div>
-                        )}
+              <div className="space-y-1 mb-2 text-xs sm:text-sm text-gray-300">
+                <p>{event.date}</p>
+                <p>{event.venue}</p>
+                <p>Strength: {event.strength}</p>
+                <p className="text-[11px] sm:text-xs text-gray-500">
+                  Created by {event.createdBy?.fullName || "Unknown"}
+                </p>
+                <p className="text-[11px] sm:text-xs">
+                  {event.shortDesc}
+                </p>
+              </div>
 
-                        {/* Feedback input */}
-                        <div className="mt-4">
-                          <label className="block text-xs text-gray-400 mb-1">
-                            Feedback Summary
-                          </label>
-                          <textarea
-                            rows={2}
-                            placeholder="Write feedback or notes about this event"
-                            value={feedbackInputs[event._id] || ""}
-                            onChange={(e) =>
-                              setFeedbackInputs((prev) => ({
-                                ...prev,
-                                [event._id]: e.target.value,
-                              }))
-                            }
-                            className="w-full p-2 rounded bg-gray-900 border border-gray-600 text-white text-sm focus:border-blue-500 focus:outline-none"
-                          />
-                          <div className="flex justify-between items-center mt-2">
-                            <button
-                              onClick={() =>
-                                submitFeedback(event._id)
-                              }
-                              className="bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 px-3 rounded transition"
-                            >
-                              Submit Feedback
-                            </button>
-                            <button
-                              onClick={() =>
-                                loadFeedbackForEvent(event._id)
-                              }
-                              className="text-xs text-blue-300 underline hover:text-blue-200"
-                            >
-                              {loadingFeedback[event._id]
-                                ? "Loading..."
-                                : "View Feedbacks"}
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Feedback list */}
-                        {feedbackList[event._id] &&
-                          feedbackList[event._id].length > 0 && (
-                            <div className="mt-3 border-t border-gray-700 pt-2 max-h-32 overflow-y-auto">
-                              <p className="text-xs text-gray-400 mb-1">
-                                Feedback from participants/admin:
-                              </p>
-                              {feedbackList[event._id].map((fb) => (
-                                <div
-                                  key={fb._id}
-                                  className="mb-2"
-                                >
-                                  <p className="text-xs text-blue-300 font-semibold">
-                                    {fb.userName || "User"}
-                                  </p>
-                                  <p className="text-xs text-gray-200">
-                                    {fb.feedback}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-
-                        {/* Actions + attendance */}
-                        <div className="flex flex-col gap-2 mt-3">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() =>
-                                handleEditClick(event)
-                              }
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-sm"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDeleteApproved(event._id)
-                              }
-                              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                          <button
-                            onClick={() =>
-                              openAttendanceModal(event)
-                            }
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 rounded self-start"
-                          >
-                            Registrations / Attendance
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              {/* Feedback input */}
+              <div className="mt-3">
+                <label className="block text-[11px] sm:text-xs text-gray-400 mb-1">
+                  Your Feedback
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Share your experience about this event"
+                  value={feedbackInputs[event._id] || ""}
+                  onChange={(e) =>
+                    setFeedbackInputs((prev) => ({
+                      ...prev,
+                      [event._id]: e.target.value,
+                    }))
+                  }
+                  className="w-full p-2 rounded bg-gray-900 border border-gray-600 text-white text-[11px] sm:text-xs focus:border-blue-500 focus:outline-none"
+                />
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
+                  <button
+                    onClick={() => submitFeedback(event._id)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-xs py-1.5 px-3 rounded transition"
+                  >
+                    Submit Feedback
+                  </button>
+                  <button
+                    onClick={() => loadFeedbackForEvent(event._id)}
+                    className="text-[11px] sm:text-xs text-blue-300 underline hover:text-blue-200"
+                  >
+                    {loadingFeedback[event._id]
+                      ? "Loading..."
+                      : "View Feedbacks"}
+                  </button>
                 </div>
               </div>
-            )}
-          </section>
-        )}
+
+              {/* Feedback list */}
+              {feedbackList[event._id] &&
+                feedbackList[event._id].length > 0 && (
+                  <div className="mt-3 border-t border-gray-700 pt-2 max-h-32 overflow-y-auto">
+                    <p className="text-[11px] sm:text-xs text-gray-400 mb-1">
+                      Feedback from participants/admin:
+                    </p>
+                    {feedbackList[event._id].map((fb) => (
+                      <div key={fb._id} className="mb-2">
+                        <p className="text-[11px] sm:text-xs text-blue-300 font-semibold">
+                          {fb.userName || "User"}
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-gray-200">
+                          {fb.feedback}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              {/* Actions */}
+              <div className="flex flex-col gap-2 mt-3">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={() => handleEditClick(event)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteApproved(event._id)}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <button
+                  onClick={() => openAttendanceModal(event)}
+                  className="self-start bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
+                >
+                  Registrations & Attendance
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+)}
+
 
         {/* Users */}
         {activeTab === "users" && (
-          <section>
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-blue-400">
-                All Users ({users.length})
-              </h3>
-              <button
-                onClick={getAllUsers}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
-              >
-                Refresh
-              </button>
-            </div>
+  <section className="space-y-6">
+    <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <h3 className="text-xl sm:text-2xl font-bold text-blue-400">
+        All Users ({users.length})
+      </h3>
+      <button
+        onClick={getAllUsers}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+      >
+        Refresh
+      </button>
+    </div>
 
             {loadingUsers ? (
               <p className="text-gray-400">Loading users...</p>
@@ -1690,9 +1626,9 @@ function AdminDashboard() {
             ) : (
               <div className="space-y-8">
                 <div>
-                  <h4 className="text-xl font-semibold text-red-400 mb-3">
-                    Admins ({adminUsers.length})
-                  </h4>
+                  <h4 className="text-lg sm:text-xl font-semibold text-red-400 mb-3">
+  Admins ({adminUsers.length})
+</h4>
                   {adminUsers.length === 0 ? (
                     <p className="text-sm text-gray-500">
                       No admins.
@@ -1707,7 +1643,7 @@ function AdminDashboard() {
                 </div>
 
                 <div>
-                  <h4 className="text-xl font-semibold text-purple-400 mb-3">
+                  <h4 className="text-lg sm:text-xl font-semibold text-purple-400 mb-3">
                     Organizers ({organizerUsers.length})
                   </h4>
                   {organizerUsers.length === 0 ? (
@@ -1724,55 +1660,51 @@ function AdminDashboard() {
                 </div>
 
                 <div>
-                  <h4 className="text-xl font-semibold text-green-400 mb-3">
-                    Users by Branch
-                  </h4>
-                  {userBranchNames.length === 0 ? (
-                    <p className="text-sm text-gray-500">
-                      No users.
-                    </p>
-                  ) : (
-                    <div>
-                      <div className="flex items-center gap-3 mb-3">
-                        <label className="text-sm text-gray-300">
-                          Select Branch
-                        </label>
-                        <select
-                          value={selectedUserBranch}
-                          onChange={(e) =>
-                            setSelectedUserBranch(e.target.value)
-                          }
-                          className="bg-gray-900 border border-gray-600 text-white text-sm px-3 py-1.5 rounded focus:outline-none focus:border-blue-500"
-                        >
-                          <option value="">
-                            -- Choose branch --
-                          </option>
-                          {userBranchNames.map((b) => (
-                            <option key={b} value={b}>
-                              {b}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      {selectedUserBranch === "" ? (
-                        <p className="text-sm text-gray-500">
-                          Please select a branch to view users.
-                        </p>
-                      ) : filteredUserUsers.length === 0 ? (
-                        <p className="text-sm text-gray-500">
-                          No users found in{" "}
-                          {selectedUserBranch}.
-                        </p>
-                      ) : (
-                        <UserTable
-                          rows={filteredUserUsers}
-                          onChangeRole={handleChangeRole}
-                          onViewProfile={loadUserRegistrations}
-                        />
-                      )}
-                    </div>
-                  )}
-                </div>
+  <h4 className="text-lg sm:text-xl font-semibold text-green-400 mb-3">
+    Users by Branch
+  </h4>
+
+  {userBranchNames.length === 0 ? (
+    <p className="text-xs sm:text-sm text-gray-500">No users.</p>
+  ) : (
+    <div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mb-3">
+        <label className="text-xs sm:text-sm text-gray-300">
+          Select Branch
+        </label>
+        <select
+          value={selectedUserBranch}
+          onChange={(e) => setSelectedUserBranch(e.target.value)}
+          className="bg-gray-900 border border-gray-600 text-white text-xs sm:text-sm px-3 py-1.5 rounded focus:outline-none focus:border-blue-500 w-full sm:w-auto"
+        >
+          <option value="">-- Choose branch --</option>
+          {userBranchNames.map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedUserBranch === "" ? (
+        <p className="text-xs sm:text-sm text-gray-500">
+          Please select a branch to view users.
+        </p>
+      ) : filteredUserUsers.length === 0 ? (
+        <p className="text-xs sm:text-sm text-gray-500">
+          No users found in {selectedUserBranch}.
+        </p>
+      ) : (
+        <UserTable
+          rows={filteredUserUsers}
+          onChangeRole={handleChangeRole}
+          onViewProfile={loadUserRegistrations}
+        />
+      )}
+    </div>
+  )}
+</div>
+
               </div>
             )}
           </section>
@@ -1899,7 +1831,7 @@ function AdminDashboard() {
                 </p>
               ) : (
                 <div className="bg-gray-800/80 border border-gray-700 rounded-2xl overflow-x-auto">
-                  <table className="min-w-full text-sm">
+                   <table className="min-w-full text-xs sm:text-sm">
                     <thead className="bg-gray-900/80">
                       <tr>
                         <th className="px-4 py-2 text-left text-gray-300">
@@ -1956,109 +1888,102 @@ function AdminDashboard() {
 
         {/* Notifications */}
         {activeTab === "notifications" && (
-          <section>
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-blue-400">
-                Notifications ({notificationsData.length})
-              </h3>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleNotifications}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
-                >
-                  Refresh
-                </button>
-                <button
-                  onClick={handleMarkAllRead}
-                  className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition text-sm"
-                >
-                  Mark all as read
-                </button>
+  <section className="space-y-4">
+    {/* Header */}
+    <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <h3 className="text-xl sm:text-2xl font-bold text-blue-400">
+        Notifications ({notificationsData.length})
+      </h3>
+      <div className="flex flex-wrap gap-2 sm:gap-3">
+        <button
+          onClick={handleNotifications}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded transition text-xs sm:text-sm"
+        >
+          Refresh
+        </button>
+        <button
+          onClick={handleMarkAllRead}
+          className="bg-gray-700 hover:bg-gray-800 text-white px-3 sm:px-4 py-2 rounded transition text-[11px] sm:text-sm"
+        >
+          Mark all as read
+        </button>
+      </div>
+    </div>
+
+    {/* Loading / error */}
+    {loadingNotifications && (
+      <p className="text-gray-400 text-sm">Loading notifications...</p>
+    )}
+    {notificationsError && (
+      <p className="text-red-400 text-sm mb-2">{notificationsError}</p>
+    )}
+
+    {/* Empty state */}
+    {notificationsData.length === 0 && !loadingNotifications ? (
+      <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
+        <p className="text-gray-400 text-sm sm:text-lg">
+          No notifications right now
+        </p>
+      </div>
+    ) : (
+      /* Cards grid */
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        {notificationsData.map((n) => (
+          <div
+            key={n._id}
+            className={`bg-gray-800/80 border-2 p-4 sm:p-6 rounded-2xl shadow-lg transition-all ${
+              n.isRead
+                ? "border-gray-700 hover:shadow-gray-500/20"
+                : "border-blue-500 hover:shadow-blue-500/30"
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2">
+              <div>
+                <h4 className="text-lg sm:text-xl font-semibold text-white mb-1">
+                  {n.title}
+                </h4>
+                <p className="text-gray-300 text-xs sm:text-sm whitespace-pre-line">
+                  {n.message}
+                </p>
+                {n.eventId && (
+                  <p className="text-gray-400 text-[11px] sm:text-xs mt-2">
+                    Related to event ID{" "}
+                    <span className="text-blue-400">{n.eventId}</span>
+                  </p>
+                )}
               </div>
+              <span
+                className={`text-[11px] sm:text-xs px-3 py-1 rounded-full ${
+                  n.isRead ? "bg-gray-600 text-white" : "bg-blue-600 text-white"
+                }`}
+              >
+                {n.isRead ? "READ" : "NEW"}
+              </span>
             </div>
 
-            {loadingNotifications && (
-              <p className="text-gray-400 text-sm">
-                Loading notifications...
-              </p>
-            )}
-            {notificationsError && (
-              <p className="text-red-400 text-sm mb-2">
-                {notificationsError}
-              </p>
-            )}
+            <div className="mb-3 text-[11px] sm:text-xs text-gray-400">
+              {n.createdAt && (
+                <span>{new Date(n.createdAt).toLocaleString()}</span>
+              )}
+            </div>
 
-            {notificationsData.length === 0 ? (
-              <div className="bg-gray-800/80 border border-gray-700 p-8 rounded-2xl text-center">
-                <p className="text-gray-400 text-lg">
-                  No notifications right now
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {notificationsData.map((n) => (
-                  <div
-                    key={n._id}
-                    className={`bg-gray-800/80 border-2 p-6 rounded-2xl shadow-lg transition-all ${
-                      n.isRead
-                        ? "border-gray-700 hover:shadow-gray-500/20"
-                        : "border-blue-500 hover:shadow-blue-500/30"
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="text-xl font-semibold text-white mb-1">
-                          {n.title}
-                        </h4>
-                        <p className="text-gray-300 text-sm whitespace-pre-line">
-                          {n.message}
-                        </p>
-                        {n.eventId && (
-                          <p className="text-gray-400 text-xs mt-2">
-                            Related to event ID:{" "}
-                            <span className="text-blue-400">
-                              {n.eventId}
-                            </span>
-                          </p>
-                        )}
-                      </div>
-                      <span
-                        className={`text-xs px-3 py-1 rounded-full ${
-                          n.isRead
-                            ? "bg-gray-600 text-white"
-                            : "bg-blue-600 text-white"
-                        }`}
-                      >
-                        {n.isRead ? "READ" : "NEW"}
-                      </span>
-                    </div>
+            <div className="flex gap-3">
+              {!n.isRead && (
+                <button
+                  onClick={() => handleMarkOneRead(n._id)}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
+                >
+                  Mark as read
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+)}
 
-                    <div className="mb-3 text-xs text-gray-400">
-                      {n.createdAt && (
-                        <span>
-                          {new Date(
-                            n.createdAt
-                          ).toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex gap-3">
-                      {!n.isRead && (
-                        <button
-                          onClick={() => handleMarkOneRead(n._id)}
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-sm"
-                        >
-                          ✓ Mark as read
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
       </div>
 
       {/* User profile modal */}
@@ -2181,7 +2106,8 @@ function AdminDashboard() {
               </p>
             ) : (
               <div className="max-h-72 overflow-y-auto">
-                <table className="w-full text-xs text-left">
+                <div className="overflow-x-auto">
+                <table className="w-full text-[11px] sm:text-xs text-left">
                   <thead className="bg-gray-800 text-gray-300">
                     <tr>
                       <th className="px-2 py-1">Name</th>
@@ -2279,6 +2205,7 @@ function AdminDashboard() {
                     })}
                   </tbody>
                 </table>
+              </div>
               </div>
             )}
           </div>
