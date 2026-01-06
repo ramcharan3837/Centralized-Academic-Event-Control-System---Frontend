@@ -691,9 +691,7 @@ function UserDashboard() {
 
     {/* Desktop nav */}
     <div className="hidden md:flex md:items-center md:space-x-5 lg:space-x-8 text-sm lg:text-lg">
-      <a href="/home" className="hover:text-blue-300 transition">
-        Home
-      </a>
+     
 
       <button
         onClick={() => setActiveTab("all")}
@@ -703,7 +701,7 @@ function UserDashboard() {
             : "hover:text-blue-300"
         }`}
       >
-        Browse Events
+        All Events
       </button>
 
       <button
@@ -911,7 +909,7 @@ function UserDashboard() {
           {/* Hero */}
           <section className="text-center py-6 sm:py-8">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-400 tracking-wide">
-              Welcome, <span className="text-white">User</span>
+              Welcome, <span className="text-white"></span>
             </h2>
             <p className="text-gray-400 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg">
               Discover and register for exciting upcoming events
