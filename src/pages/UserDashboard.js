@@ -229,6 +229,7 @@ function CompactEventCalendar({ events = [] }) {
 }
 
 function UserDashboard() {
+  
   const [eventsData, setEventsData] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
@@ -246,6 +247,8 @@ function UserDashboard() {
   const [feedbackInputs, setFeedbackInputs] = useState({});
   const [feedbackList, setFeedbackList] = useState({});
   const [loadingFeedback, setLoadingFeedback] = useState({});
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
 
   // Tabs and filters
   const [activeTab, setActiveTab] = useState("all");
@@ -275,7 +278,173 @@ function UserDashboard() {
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [notificationsError, setNotificationsError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("events"); 
+// "events" | "registered" | "attended" | "notifications"
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+  const handleFreeEventRegistration = async (event) => {
+    try {
+      setPaymentLoading(true);
+      setPaymentError('');
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login again");
+        return;
+      }
+
+      const response = await axios.post(
+        `${base_url}events/${event._id || event.id}/register-free`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.status === 'Success') {
+        updateRegisteredLocal(event);
+        setShowConfirm(false);
+        setConfirmEvent(null);
+        fetchAttendedEventsFromBackend();
+      }
+    } catch (err) {
+      console.error("Error registering for free event", err);
+      const msg = err.response?.data?.message || "Failed to register";
+      alert(msg);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+  const handlePaidEventRegistration = async (event) => {
+    try {
+      setPaymentLoading(true);
+      setPaymentError('');
+
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert('Failed to load payment gateway. Please try again.');
+        setPaymentLoading(false);
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login again");
+        return;
+      }
+
+      // Get user data
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+
+      // Step 1: Create order
+      const orderResponse = await axios.post(
+        `${base_url}payment/create-order`,
+        {
+          amount: event.registrationFee,
+          eventId: event._id || event.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const { order, key } = orderResponse.data;
+
+      // Step 2: Configure Razorpay
+      const options = {
+        key: key,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'College Event Registration',
+        description: `Registration for ${event.name}`,
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            // Step 3: Verify payment
+            const verifyResponse = await axios.post(
+              `${base_url}payment/verify-payment`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                eventId: event._id || event.id,
+                amount: event.registrationFee,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            if (verifyResponse.data.status === 'Success') {
+              alert('Payment successful! You are now registered.');
+              updateRegisteredLocal(event);
+              setShowConfirm(false);
+              setConfirmEvent(null);
+              fetchAttendedEventsFromBackend();
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            alert('Payment verification failed. Please contact support with payment ID: ' + response.razorpay_payment_id);
+          } finally {
+            setPaymentLoading(false);
+          }
+        },
+        prefill: {
+          name: userData.fullName || '',
+          email: userData.email || '',
+          contact: userData.phone || '',
+        },
+        notes: {
+          eventId: event._id || event.id,
+          eventName: event.name,
+        },
+        theme: {
+          color: '#1976d2',
+        },
+        modal: {
+          ondismiss: function () {
+            setPaymentLoading(false);
+            setPaymentError('Payment cancelled');
+            setShowConfirm(false);
+            setConfirmEvent(null);
+          },
+        },
+      };
+
+      // Step 4: Open Razorpay
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert(error.response?.data?.message || 'Failed to process payment');
+      setPaymentLoading(false);
+    }
+  };
+  const confirmRegistration = async () => {
+    if (!confirmEvent) return;
+
+    // Check if event is free or paid
+    const isFreeEvent = !confirmEvent.registrationFee || confirmEvent.registrationFee === 0;
+
+    if (isFreeEvent) {
+      // Handle free event registration
+      await handleFreeEventRegistration(confirmEvent);
+    } else {
+      // Handle paid event registration with Razorpay
+      await handlePaidEventRegistration(confirmEvent);
+    }
+  };
 
   useEffect(() => {
     getAllVenues();
@@ -617,36 +786,36 @@ function UserDashboard() {
     setShowConfirm(true);
   };
 
-  const confirmRegistration = async () => {
-    if (!confirmEvent) return;
+  // const confirmRegistration = async () => {
+  //   if (!confirmEvent) return;
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please login again");
-        return;
-      }
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       alert("Please login again");
+  //       return;
+  //     }
 
-      await axios.post(
-        `${base_url}events/${confirmEvent.id || confirmEvent._id}/register`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+  //     await axios.post(
+  //       `${base_url}events/${confirmEvent.id || confirmEvent._id}/register`,
+  //       {},
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
 
-      updateRegisteredLocal(confirmEvent);
-      setShowConfirm(false);
-      setConfirmEvent(null);
+  //     updateRegisteredLocal(confirmEvent);
+  //     setShowConfirm(false);
+  //     setConfirmEvent(null);
 
-      fetchAttendedEventsFromBackend();
-    } catch (err) {
-      console.error("Error registering for event", err);
-      const msg =
-        err.response?.data?.message || "Failed to register";
-      alert(msg);
-      setShowConfirm(false);
-      setConfirmEvent(null);
-    }
-  };
+  //     fetchAttendedEventsFromBackend();
+  //   } catch (err) {
+  //     console.error("Error registering for event", err);
+  //     const msg =
+  //       err.response?.data?.message || "Failed to register";
+  //     alert(msg);
+  //     setShowConfirm(false);
+  //     setConfirmEvent(null);
+  //   }
+  // };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -1584,11 +1753,23 @@ function UserDashboard() {
             </p>
 
             <p className="text-gray-300 mb-1 text-sm">
-              {confirmEvent.date}
+              <strong>Date:</strong> {confirmEvent.date}
             </p>
             <p className="text-gray-300 mb-1 text-sm">
-              {confirmEvent.venue}
+              <strong>Venue:</strong> {confirmEvent.venue}
             </p>
+            
+            {/* ADD THIS: Show Registration Fee */}
+            <div className="bg-blue-900/30 border border-blue-700 p-3 rounded-lg my-3">
+              <p className="text-white font-semibold text-base">
+                Registration Fee: {' '}
+                {!confirmEvent.registrationFee || confirmEvent.registrationFee === 0 
+                  ? <span className="text-green-400">FREE</span>
+                  : <span className="text-yellow-400">₹{confirmEvent.registrationFee}</span>
+                }
+              </p>
+            </div>
+
             <p className="text-gray-300 mb-2 text-sm">
               {confirmEvent.shortDesc}
             </p>
@@ -1612,22 +1793,47 @@ function UserDashboard() {
               </p>
             )}
 
+            {/* ADD THIS: Show Payment Error */}
+            {paymentError && (
+              <div className="bg-red-900/30 border border-red-700 p-3 rounded-lg my-3">
+                <p className="text-red-300 text-sm">{paymentError}</p>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 mt-4">
               <button
                 onClick={() => {
                   setShowConfirm(false);
                   setConfirmEvent(null);
+                  setPaymentError('');
                 }}
-                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition text-sm"
+                disabled={paymentLoading}
+                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
 
               <button
                 onClick={confirmRegistration}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+                disabled={paymentLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Yes, Register
+                {paymentLoading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {!confirmEvent.registrationFee || confirmEvent.registrationFee === 0 
+                      ? 'Register for Free'
+                      : `Pay ₹${confirmEvent.registrationFee} & Register`
+                    }
+                  </>
+                )}
               </button>
             </div>
           </div>

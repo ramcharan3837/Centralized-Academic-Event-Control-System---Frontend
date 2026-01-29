@@ -91,15 +91,13 @@ function EventCalendar({ events = [], onDateClick }) {
         className={`aspect-square  p-1 sm:p-2 rounded-lg text-[10px] sm:text-sm font-medium transition-all hover:scale-105 hover:shadow-lg relative
           ${isToday ? "ring-2 ring-blue-500" : ""}
           ${isSelected ? "bg-blue-600 text-white" : "bg-gray-800/50 text-gray-300"}
-          ${
-            hasEvent && !isSelected
-              ? "bg-green-600/30 border-2 border-green-500"
-              : ""
+          ${hasEvent && !isSelected
+            ? "bg-green-600/30 border-2 border-green-500"
+            : ""
           }
-          ${
-            !hasEvent && !isSelected
-              ? "hover:bg-gray-700/50"
-              : ""
+          ${!hasEvent && !isSelected
+            ? "hover:bg-gray-700/50"
+            : ""
           }`}
       >
         <span className="relative z-10">{day}</span>
@@ -420,6 +418,7 @@ function AdminDashboard() {
   const [eventRegistrations, setEventRegistrations] = useState([]);
   const [loadingEventRegistrations, setLoadingEventRegistrations] =
     useState(false);
+  const [registrationFee, setRegistrationFee] = useState("");
 
   // User profile modal
   const [selectedUser, setSelectedUser] = useState(null);
@@ -438,8 +437,8 @@ function AdminDashboard() {
   const [selectedUserBranch, setSelectedUserBranch] = useState("");
   const filteredUserUsers = selectedUserBranch
     ? userUsers.filter(
-        (u) => (u.branch || "Unknown") === selectedUserBranch
-      )
+      (u) => (u.branch || "Unknown") === selectedUserBranch
+    )
     : userUsers;
 
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -478,7 +477,7 @@ function AdminDashboard() {
         console.log(err.message);
         alert(
           err.response?.data?.message ||
-            "Failed to fetch pending events"
+          "Failed to fetch pending events"
         );
       });
   };
@@ -599,8 +598,9 @@ function AdminDashboard() {
       !shortDesc ||
       !about ||
       !learning
+      
     ) {
-      alert("Please fill all fields");
+      alert("Please fill all required fields");
       return;
     }
 
@@ -612,6 +612,7 @@ function AdminDashboard() {
       shortDesc,
       about,
       learning,
+      registrationFee: registrationFee ? parseInt(registrationFee) : 0, // ADD THIS LINE
     };
 
     const token = localStorage.getItem("token");
@@ -632,7 +633,7 @@ function AdminDashboard() {
           console.log(err);
           alert(
             err.response?.data?.message ||
-              "Failed to update event"
+            "Failed to update event"
           );
         });
     } else {
@@ -648,12 +649,11 @@ function AdminDashboard() {
           console.log(err);
           alert(
             err.response?.data?.message ||
-              "Failed to create event"
+            "Failed to create event"
           );
         });
     }
   };
-
   const resetForm = () => {
     setEditEvent(null);
     setName("");
@@ -663,6 +663,7 @@ function AdminDashboard() {
     setShortDesc("");
     setAbout("");
     setLearning("");
+    setRegistrationFee(""); // ADD THIS LINE
   };
 
   const handleEditClick = (event) => {
@@ -678,9 +679,9 @@ function AdminDashboard() {
     setShortDesc(event.shortDesc);
     setAbout(event.about);
     setLearning(event.learning);
+    setRegistrationFee(event.registrationFee || ""); // ADD THIS LINE
     setActiveTab("create");
   };
-
   const handleApprove = (eventId) => {
     const token = localStorage.getItem("token");
     if (
@@ -706,7 +707,7 @@ function AdminDashboard() {
         console.log(err);
         alert(
           err.response?.data?.message ||
-            "Failed to approve event"
+          "Failed to approve event"
         );
       });
   };
@@ -731,7 +732,7 @@ function AdminDashboard() {
         console.log(err);
         alert(
           err.response?.data?.message ||
-            "Failed to reject event"
+          "Failed to reject event"
         );
       });
   };
@@ -756,7 +757,7 @@ function AdminDashboard() {
         console.log(err);
         alert(
           err.response?.data?.message ||
-            "Failed to delete event"
+          "Failed to delete event"
         );
       });
   };
@@ -815,11 +816,11 @@ function AdminDashboard() {
         console.error(err);
         setNotificationsError(
           err.response?.data?.message ||
-            "Failed to load notifications"
+          "Failed to load notifications"
         );
         alert(
           err.response?.data?.message ||
-            "Failed to load notifications"
+          "Failed to load notifications"
         );
       })
       .finally(() => setLoadingNotifications(false));
@@ -850,7 +851,7 @@ function AdminDashboard() {
         console.error(err);
         alert(
           err.response?.data?.message ||
-            "Failed to update notification"
+          "Failed to update notification"
         );
       });
   };
@@ -878,7 +879,7 @@ function AdminDashboard() {
         console.error(err);
         alert(
           err.response?.data?.message ||
-            "Failed to update notifications"
+          "Failed to update notifications"
         );
       });
   };
@@ -903,7 +904,7 @@ function AdminDashboard() {
       console.error(err);
       alert(
         err.response?.data?.message ||
-          "Failed to load registrations for this user"
+        "Failed to load registrations for this user"
       );
     } finally {
       setLoadingUserRegistrations(false);
@@ -935,7 +936,7 @@ function AdminDashboard() {
       console.error(err);
       alert(
         err.response?.data?.message ||
-          "Failed to load registrations for this event"
+        "Failed to load registrations for this event"
       );
     } finally {
       setLoadingEventRegistrations(false);
@@ -969,7 +970,7 @@ function AdminDashboard() {
       console.error(err);
       alert(
         err.response?.data?.message ||
-          "Failed to update attendance"
+        "Failed to update attendance"
       );
     }
   };
@@ -977,116 +978,109 @@ function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       {/* Navbar */}
-    <nav className="bg-gray-950/80 backdrop-blur-md text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-gray-700 shadow-lg">
-  <div className="flex flex-wrap items-center justify-between gap-3">
-    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400">
-      Admin Dashboard
-    </h1>
+      <nav className="bg-gray-950/80 backdrop-blur-md text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-gray-700 shadow-lg">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400">
+            Admin Dashboard
+          </h1>
 
-    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm md:text-base">
-      <button
-        onClick={() => setActiveTab("calendar")}
-        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
-          activeTab === "calendar" ? "text-blue-400 font-bold" : ""
-        }`}
-      >
-        Calendar
-      </button>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm md:text-base">
+            <button
+              onClick={() => setActiveTab("calendar")}
+              className={`px-2 py-1 rounded hover:text-blue-300 transition ${activeTab === "calendar" ? "text-blue-400 font-bold" : ""
+                }`}
+            >
+              Calendar
+            </button>
 
-      <button
-        onClick={() => setActiveTab("create")}
-        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
-          activeTab === "create" ? "text-blue-400 font-bold" : ""
-        }`}
-      >
-        Create Event
-      </button>
+            <button
+              onClick={() => setActiveTab("create")}
+              className={`px-2 py-1 rounded hover:text-blue-300 transition ${activeTab === "create" ? "text-blue-400 font-bold" : ""
+                }`}
+            >
+              Create Event
+            </button>
 
-      <button
-        onClick={() => setActiveTab("pending")}
-        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
-          activeTab === "pending" ? "text-blue-400 font-bold" : ""
-        }`}
-      >
-        Pending ({pendingEvents.length})
-      </button>
+            <button
+              onClick={() => setActiveTab("pending")}
+              className={`px-2 py-1 rounded hover:text-blue-300 transition ${activeTab === "pending" ? "text-blue-400 font-bold" : ""
+                }`}
+            >
+              Pending ({pendingEvents.length})
+            </button>
 
-      <button
-        onClick={() => setActiveTab("approved")}
-        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
-          activeTab === "approved" ? "text-blue-400 font-bold" : ""
-        }`}
-      >
-        All Events ({approvedEvents.length})
-      </button>
+            <button
+              onClick={() => setActiveTab("approved")}
+              className={`px-2 py-1 rounded hover:text-blue-300 transition ${activeTab === "approved" ? "text-blue-400 font-bold" : ""
+                }`}
+            >
+              All Events ({approvedEvents.length})
+            </button>
 
-      <button
-        onClick={() => {
-          setActiveTab("users");
-          getAllUsers();
-        }}
-        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
-          activeTab === "users" ? "text-blue-400 font-bold" : ""
-        }`}
-      >
-        Users
-      </button>
+            <button
+              onClick={() => {
+                setActiveTab("users");
+                getAllUsers();
+              }}
+              className={`px-2 py-1 rounded hover:text-blue-300 transition ${activeTab === "users" ? "text-blue-400 font-bold" : ""
+                }`}
+            >
+              Users
+            </button>
 
-      <button
-        onClick={() => {
-          setActiveTab("venues");
-          loadVenues();
-        }}
-        className={`px-2 py-1 rounded hover:text-blue-300 transition ${
-          activeTab === "venues" ? "text-blue-400 font-bold" : ""
-        }`}
-      >
-        Venues
-      </button>
+            <button
+              onClick={() => {
+                setActiveTab("venues");
+                loadVenues();
+              }}
+              className={`px-2 py-1 rounded hover:text-blue-300 transition ${activeTab === "venues" ? "text-blue-400 font-bold" : ""
+                }`}
+            >
+              Venues
+            </button>
 
-      <button
-        onClick={() => {
-          handleNotifications();
-          setActiveTab("notifications");
-        }}
-        className={`px-2 py-1 rounded hover:text-red-400 transition ${
-          activeTab === "notifications" ? "text-red-400 font-bold" : ""
-        }`}
-      >
-        Notifications
-      </button>
+            <button
+              onClick={() => {
+                handleNotifications();
+                setActiveTab("notifications");
+              }}
+              className={`px-2 py-1 rounded hover:text-red-400 transition ${activeTab === "notifications" ? "text-red-400 font-bold" : ""
+                }`}
+            >
+              Notifications
+            </button>
 
-      <button
-        onClick={handleLogout}
-        className="px-2 py-1 rounded hover:text-red-400 transition"
-      >
-        Logout
-      </button>
-    </div>
-  </div>
-</nav>
+            <button
+              onClick={handleLogout}
+              className="px-2 py-1 rounded hover:text-red-400 transition"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
 
 
 
       {/* Hero Section */}
- <section className="text-center py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
-  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-400 tracking-wide">
-    Welcome, <span className="text-white">Admin</span>
-  </h2>
-  <p className="text-gray-400 mt-2 sm:mt-3 text-sm sm:text-base">
-    {activeTab === "calendar" && "View all events in calendar view"}
-    {activeTab === "create" && "Create and manage events"}
-    {activeTab === "pending" &&
-      "Review and approve events submitted by users"}
-    {activeTab === "approved" && "Manage all published events"}
-    {activeTab === "users" &&
-      "Manage users, roles, and branches"}
-    {activeTab === "venues" &&
-      "Create and manage reusable venues"}
-    {activeTab === "notifications" &&
-      "View all your notifications"}
-  </p>
-</section>
+      <section className="text-center py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-400 tracking-wide">
+          Welcome, <span className="text-white">Admin</span>
+        </h2>
+        <p className="text-gray-400 mt-2 sm:mt-3 text-sm sm:text-base">
+          {activeTab === "calendar" && "View all events in calendar view"}
+          {activeTab === "create" && "Create and manage events"}
+          {activeTab === "pending" &&
+            "Review and approve events submitted by users"}
+          {activeTab === "approved" && "Manage all published events"}
+          {activeTab === "users" &&
+            "Manage users, roles, and branches"}
+          {activeTab === "venues" &&
+            "Create and manage reusable venues"}
+          {activeTab === "notifications" &&
+            "View all your notifications"}
+        </p>
+      </section>
 
 
       <div className="px-4 sm:px-6 lg:px-10 pb-10">
@@ -1105,16 +1099,16 @@ function AdminDashboard() {
         )}
 
         {/* Create Event */}
-       {activeTab === "create" && (
-  <section>
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-6 bg-gray-800/80 border border-gray-700 p-4 sm:p-6 rounded-2xl shadow-lg">
-        <h3 className="text-xl sm:text-2xl font-bold text-blue-400 mb-2">
-          {editEvent ? "Edit Event" : "Create New Event"}
-        </h3>
-        <p className="text-gray-400 text-xs sm:text-sm mb-4">
-          Admin events are automatically approved and published.
-        </p>
+        {activeTab === "create" && (
+          <section>
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-6 bg-gray-800/80 border border-gray-700 p-4 sm:p-6 rounded-2xl shadow-lg">
+                <h3 className="text-xl sm:text-2xl font-bold text-blue-400 mb-2">
+                  {editEvent ? "Edit Event" : "Create New Event"}
+                </h3>
+                <p className="text-gray-400 text-xs sm:text-sm mb-4">
+                  Admin events are automatically approved and published.
+                </p>
                 <form
                   onSubmit={handleSaveEvent}
                   className="space-y-4"
@@ -1188,6 +1182,31 @@ function AdminDashboard() {
                     }
                     className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
                   />
+                  {/* Registration Fee Input */}
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-300 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Registration Fee (₹)
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Enter 0 for free event"
+                      value={registrationFee}
+                      onChange={(e) => setRegistrationFee(e.target.value)}
+                      min="0"
+                      className="w-full p-3 rounded bg-gray-900 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                    />
+                    <div className="bg-blue-900/30 border border-blue-700 p-3 rounded-lg">
+                      <p className="text-blue-300 text-xs">
+                        💡 <strong>Tip:</strong> Enter <strong>0</strong> for free events.
+                        Users will be registered directly without payment. For paid events,
+                        enter the amount in ₹ (e.g., 500 for ₹500). Users will complete
+                        payment via Razorpay before registration.
+                      </p>
+                    </div>
+                  </div>
                   <textarea
                     placeholder="Short Description"
                     value={shortDesc}
@@ -1238,382 +1257,444 @@ function AdminDashboard() {
 
         {/* Pending Events */}
         {activeTab === "pending" && (
-  <section>
-    {/* Header */}
-    <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <h3 className="text-xl sm:text-2xl font-bold text-yellow-400">
-        Pending Approval ({pendingEvents.length})
-      </h3>
-      <button
-        onClick={getPendingEvents}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
-      >
-        Refresh
-      </button>
-    </div>
+          <section>
+            {/* Header */}
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-yellow-400">
+                Pending Approval ({pendingEvents.length})
+              </h3>
+              <button
+                onClick={getPendingEvents}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+              >
+                Refresh
+              </button>
+            </div>
 
-    {/* Empty state */}
-    {pendingEvents.length === 0 ? (
-      <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
-        <p className="text-gray-400 text-sm sm:text-lg">
-          No pending events to review
-        </p>
-      </div>
-    ) : (
-      /* Cards grid */
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
-        {pendingEvents.map((event) => (
-          <div
-            key={event._id}
-            className="bg-gray-800/80 border-2 border-yellow-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-yellow-600/30 transition-all"
-          >
-            {/* Top row: title + status */}
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h4 className="text-base sm:text-lg font-semibold text-white mb-1">
-                  {event.name}
-                </h4>
-                <p className="text-gray-400 text-xs sm:text-sm">
-                  Submitted by{" "}
-                  <span className="text-blue-400">
-                    {event.createdBy?.fullName || "Unknown"}
-                  </span>
-                </p>
-                <p className="text-gray-400 text-[11px] sm:text-xs">
-                  Email: {event.createdBy?.email || "NA"}
+
+            {/* Empty state */}
+            {pendingEvents.length === 0 ? (
+              <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
+                <p className="text-gray-400 text-sm sm:text-lg">
+                  No pending events to review
                 </p>
               </div>
-              <span className="bg-yellow-600 text-white text-[11px] sm:text-xs px-3 py-1 rounded-full">
-                PENDING
-              </span>
-            </div>
+            ) : (
+              /* Cards grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                {pendingEvents.map((event) => (
+                  <div
+                    key={event._id}
+                    className="bg-gray-800/80 border-2 border-yellow-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-yellow-600/30 transition-all"
+                  >
+                    {/* Top row: title + status */}
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="text-base sm:text-lg font-semibold text-white mb-1">
+                          {event.name}
+                        </h4>
+                        <p className="text-gray-400 text-xs sm:text-sm">
+                          Submitted by{" "}
+                          <span className="text-blue-400">
+                            {event.createdBy?.fullName || "Unknown"}
+                          </span>
+                        </p>
+                        <p className="text-gray-400 text-[11px] sm:text-xs">
+                          Email: {event.createdBy?.email || "NA"}
+                        </p>
+                      </div>
+                      <span className="bg-yellow-600 text-white text-[11px] sm:text-xs px-3 py-1 rounded-full">
+                        PENDING
+                      </span>
+                    </div>
 
-            {/* Basic details */}
-            <div className="space-y-1.5 mb-3 text-xs sm:text-sm text-gray-300">
-              <p>
-                <strong className="text-white">Date:</strong> {event.date}
-              </p>
-              <p>
-                <strong className="text-white">Venue:</strong> {event.venue}
-              </p>
-              <p>
-                <strong className="text-white">Strength:</strong>{" "}
-                {event.strength}
-              </p>
-              <p>
-                <strong className="text-white">Short Desc:</strong>{" "}
-                {event.shortDesc}
-              </p>
-            </div>
+                    {/* Basic details */}
+                    <div className="space-y-1.5 mb-3 text-xs sm:text-sm text-gray-300">
+                      <p>
+                        <strong className="text-white">Date:</strong> {event.date}
+                      </p>
+                      <p>
+                        <strong className="text-white">Venue:</strong> {event.venue}
+                      </p>
+                      <p className="font-semibold">
+                        Fee: {' '}
+                        {!event.registrationFee || event.registrationFee === 0 ? (
+                          <span className="text-green-400">FREE</span>
+                        ) : (
+                          <span className="text-yellow-400">₹{event.registrationFee}</span>
+                        )}
+                      </p>
+                      <p>
+                        <strong className="text-white">Strength:</strong>{" "}
+                        {event.strength}
+                      </p>
+                      <p>
+                        <strong className="text-white">Short Desc:</strong>{" "}
+                        {event.shortDesc}
+                      </p>
+                    </div>
 
-            {/* Toggle details */}
-            <button
-              onClick={() =>
-                setViewStates((prev) => ({
-                  ...prev,
-                  [event._id]: !prev[event._id],
-                }))
-              }
-              className="text-blue-400 hover:text-blue-300 text-xs sm:text-sm mb-3 underline"
-            >
-              {viewStates[event._id] ? "Hide Full Details" : "Show Full Details"}
-            </button>
+                    {/* Toggle details */}
+                    <button
+                      onClick={() =>
+                        setViewStates((prev) => ({
+                          ...prev,
+                          [event._id]: !prev[event._id],
+                        }))
+                      }
+                      className="text-blue-400 hover:text-blue-300 text-xs sm:text-sm mb-3 underline"
+                    >
+                      {viewStates[event._id] ? "Hide Full Details" : "Show Full Details"}
+                    </button>
 
-            {/* Extra details */}
-            {viewStates[event._id] && (
-              <div className="bg-gray-700/50 p-3 sm:p-4 rounded-lg text-gray-300 text-[11px] sm:text-sm space-y-3 mb-3">
-                <div>
-                  <strong className="text-white block">About Event</strong>
-                  <p className="mt-1">{event.about}</p>
-                </div>
-                <div>
-                  <strong className="text-white block">Learning Outcomes</strong>
-                  <p className="mt-1">{event.learning}</p>
-                </div>
-                <div>
-                  <strong className="text-white block">Submitted At</strong>
-                  <p className="mt-1">
-                    {event.createdAt
-                      ? new Date(event.createdAt).toLocaleString()
-                      : "-"}
-                  </p>
-                </div>
+                    {/* Extra details */}
+                    {viewStates[event._id] && (
+                      <div className="bg-gray-700/50 p-3 sm:p-4 rounded-lg text-gray-300 text-[11px] sm:text-sm space-y-3 mb-3">
+                        <div>
+                          <strong className="text-white block">About Event</strong>
+                          <p className="mt-1">{event.about}</p>
+                        </div>
+                        <div>
+                          <strong className="text-white block">Learning Outcomes</strong>
+                          <p className="mt-1">{event.learning}</p>
+                        </div>
+                        <div>
+                          <strong className="text-white block">Submitted At</strong>
+                          <p className="mt-1">
+                            {event.createdAt
+                              ? new Date(event.createdAt).toLocaleString()
+                              : "-"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Approve / Reject buttons */}
+                    <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                      <button
+                        onClick={() => handleApprove(event._id)}
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(event._id)}
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-
-            {/* Approve / Reject buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 mt-2">
-              <button
-                onClick={() => handleApprove(event._id)}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => handleReject(event._id)}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
-              >
-                Reject
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </section>
-)}
+          </section>
+        )}
 
 
         {/* Approved Events */}
         {activeTab === "approved" && (
-  <section className="space-y-8">
-    {/* Upcoming */}
-    <div>
-      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <h3 className="text-xl sm:text-2xl font-bold text-green-400">
-          Upcoming Events ({upcomingEvents.length})
-        </h3>
-        <button
-          onClick={getApprovedEvents}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
-        >
-          Refresh
-        </button>
-      </div>
-
-      {upcomingEvents.length === 0 ? (
-        <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
-          <p className="text-gray-400 text-sm sm:text-lg">
-            No approved events yet
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {upcomingEvents.map((event) => (
-            <div
-              key={event._id}
-              className="bg-gray-800/80 border border-green-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="text-base sm:text-lg font-semibold text-white">
-                  {event.name}
-                </h4>
-                <span className="bg-green-600 text-white text-[11px] sm:text-xs px-2 py-1 rounded-full">
-                  UPCOMING
-                </span>
-              </div>
-
-              <div className="space-y-1 mb-2 text-xs sm:text-sm text-gray-300">
-                <p>{event.date}</p>
-                <p>{event.venue}</p>
-                <p>{event.strength} participants</p>
-                <p className="text-[11px] sm:text-xs text-gray-500">
-                  Created by {event.createdBy?.fullName || "Unknown"}
-                </p>
-              </div>
-
-              <button
-                onClick={() =>
-                  setViewStates((prev) => ({
-                    ...prev,
-                    [event._id]: !prev[event._id],
-                  }))
-                }
-                className="text-blue-400 hover:text-blue-300 text-xs sm:text-sm underline mb-2"
-              >
-                {viewStates[event._id] ? "Hide Details" : "View Details"}
-              </button>
-
-              {viewStates[event._id] && (
-                <div className="mt-2 bg-gray-700/50 p-3 rounded-lg text-[11px] sm:text-sm text-gray-300 space-y-2">
-                  <p>
-                    <strong className="text-white">Short Desc:</strong>{" "}
-                    {event.shortDesc}
-                  </p>
-                  <p>
-                    <strong className="text-white">About:</strong>{" "}
-                    {event.about}
-                  </p>
-                  <p>
-                    <strong className="text-white">Learning:</strong>{" "}
-                    {event.learning}
-                  </p>
-                  {event.approvedAt && (
-                    <p className="text-[11px] sm:text-xs text-green-400">
-                      Approved{" "}
-                      {new Date(event.approvedAt).toLocaleString()}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Actions + Attendance */}
-              <div className="flex flex-col gap-2 mt-3">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button
-                    onClick={() => handleEditClick(event)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteApproved(event._id)}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
+          <section className="space-y-8">
+            {/* Upcoming */}
+            <div>
+              <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <h3 className="text-xl sm:text-2xl font-bold text-green-400">
+                  Upcoming Events ({upcomingEvents.length})
+                </h3>
                 <button
-                  onClick={() => openAttendanceModal(event)}
-                  className="self-start bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
+                  onClick={getApprovedEvents}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
                 >
-                  Registrations & Attendance
+                  Refresh
                 </button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
 
-    {/* Past */}
-    <div>
-      <h3 className="text-xl sm:text-2xl font-bold text-green-400 mb-4">
-        Past Events ({pastEvents.length})
-      </h3>
-      {pastEvents.length === 0 ? (
-        <p className="text-gray-400 text-sm sm:text-base">
-          No past events yet.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {pastEvents.map((event) => (
-            <div
-              key={event._id}
-              className="bg-gray-800/80 border border-green-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="text-base sm:text-lg font-semibold text-white">
-                  {event.name}
-                </h4>
-                <span className="bg-green-600 text-white text-[11px] sm:text-xs px-2 py-1 rounded-full">
-                  PAST
-                </span>
-              </div>
-
-              <div className="space-y-1 mb-2 text-xs sm:text-sm text-gray-300">
-                <p>{event.date}</p>
-                <p>{event.venue}</p>
-                <p>Strength: {event.strength}</p>
-                <p className="text-[11px] sm:text-xs text-gray-500">
-                  Created by {event.createdBy?.fullName || "Unknown"}
-                </p>
-                <p className="text-[11px] sm:text-xs">
-                  {event.shortDesc}
-                </p>
-              </div>
-
-              {/* Feedback input */}
-              <div className="mt-3">
-                <label className="block text-[11px] sm:text-xs text-gray-400 mb-1">
-                  Your Feedback
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Share your experience about this event"
-                  value={feedbackInputs[event._id] || ""}
-                  onChange={(e) =>
-                    setFeedbackInputs((prev) => ({
-                      ...prev,
-                      [event._id]: e.target.value,
-                    }))
-                  }
-                  className="w-full p-2 rounded bg-gray-900 border border-gray-600 text-white text-[11px] sm:text-xs focus:border-blue-500 focus:outline-none"
-                />
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
-                  <button
-                    onClick={() => submitFeedback(event._id)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-xs py-1.5 px-3 rounded transition"
-                  >
-                    Submit Feedback
-                  </button>
-                  <button
-                    onClick={() => loadFeedbackForEvent(event._id)}
-                    className="text-[11px] sm:text-xs text-blue-300 underline hover:text-blue-200"
-                  >
-                    {loadingFeedback[event._id]
-                      ? "Loading..."
-                      : "View Feedbacks"}
-                  </button>
+              {upcomingEvents.length === 0 ? (
+                <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
+                  <p className="text-gray-400 text-sm sm:text-lg">
+                    No approved events yet
+                  </p>
                 </div>
-              </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {upcomingEvents.map((event) => (
+                    <div
+                      key={event._id}
+                      className="bg-gray-800/80 border border-green-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-base sm:text-lg font-semibold text-white">
+                          {event.name}
+                        </h4>
+                        <span className="bg-green-600 text-white text-[11px] sm:text-xs px-2 py-1 rounded-full">
+                          UPCOMING
+                        </span>
+                      </div>
 
-              {/* Feedback list */}
-              {feedbackList[event._id] &&
-                feedbackList[event._id].length > 0 && (
-                  <div className="mt-3 border-t border-gray-700 pt-2 max-h-32 overflow-y-auto">
-                    <p className="text-[11px] sm:text-xs text-gray-400 mb-1">
-                      Feedback from participants/admin:
-                    </p>
-                    {feedbackList[event._id].map((fb) => (
-                      <div key={fb._id} className="mb-2">
-                        <p className="text-[11px] sm:text-xs text-blue-300 font-semibold">
-                          {fb.userName || "User"}
+                      <div className="space-y-1 mb-2 text-xs sm:text-sm text-gray-300">
+                        <p>{event.date}</p>
+                        <p>{event.venue}</p>
+                        <p className="font-semibold">
+                          Fee: {' '}
+                          {!event.registrationFee || event.registrationFee === 0 ? (
+                            <span className="text-green-400">FREE</span>
+                          ) : (
+                            <span className="text-yellow-400">₹{event.registrationFee}</span>
+                          )}
                         </p>
-                        <p className="text-[11px] sm:text-xs text-gray-200">
-                          {fb.feedback}
+                        <p>{event.strength} participants</p>
+                        <p className="text-[11px] sm:text-xs text-gray-500">
+                          Created by {event.createdBy?.fullName || "Unknown"}
                         </p>
                       </div>
-                    ))}
-                  </div>
-                )}
 
-              {/* Actions */}
-              <div className="flex flex-col gap-2 mt-3">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button
-                    onClick={() => handleEditClick(event)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteApproved(event._id)}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
-                  >
-                    Delete
-                  </button>
+                      <button
+                        onClick={() =>
+                          setViewStates((prev) => ({
+                            ...prev,
+                            [event._id]: !prev[event._id],
+                          }))
+                        }
+                        className="text-blue-400 hover:text-blue-300 text-xs sm:text-sm underline mb-2"
+                      >
+                        {viewStates[event._id] ? "Hide Details" : "View Details"}
+                      </button>
+
+                      {viewStates[event._id] && (
+                        <div className="mt-2 bg-gray-700/50 p-3 rounded-lg text-[11px] sm:text-sm text-gray-300 space-y-2">
+                          <p>
+                            <strong className="text-white">Short Desc:</strong>{" "}
+                            {event.shortDesc}
+                          </p>
+                          <p>
+                            <strong className="text-white">About:</strong>{" "}
+                            {event.about}
+                          </p>
+                          <p>
+                            <strong className="text-white">Learning:</strong>{" "}
+                            {event.learning}
+                          </p>
+                          {event.approvedAt && (
+                            <p className="text-[11px] sm:text-xs text-green-400">
+                              Approved{" "}
+                              {new Date(event.approvedAt).toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Actions + Attendance */}
+                      <div className="flex flex-col gap-2 mt-3">
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button
+                            onClick={() => handleEditClick(event)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteApproved(event._id)}
+                            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => openAttendanceModal(event)}
+                          className="self-start bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
+                        >
+                          Registrations & Attendance
+                        </button>
+                        {event.registrationFee && event.registrationFee > 0 && (
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = localStorage.getItem("token");
+                                const response = await axios.get(
+                                  `${base_url}events/${event._id}/payments`,
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                  }
+                                );
+
+                                const { payments, totalPayments, totalRevenue } = response.data;
+
+                                alert(
+                                  `Payment Summary for "${event.name}":\n\n` +
+                                  `Total Payments: ${totalPayments}\n` +
+                                  `Total Revenue: ₹${totalRevenue}\n\n` +
+                                  `Check console for detailed payment list`
+                                );
+
+                                console.log("Detailed Payments:", payments);
+                              } catch (err) {
+                                console.error(err);
+                                alert(
+                                  err.response?.data?.message ||
+                                  "Failed to fetch payment details"
+                                );
+                              }
+                            }}
+                            className="self-start bg-yellow-600 hover:bg-yellow-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
+                          >
+                            💰 View Payments
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <button
-                  onClick={() => openAttendanceModal(event)}
-                  className="self-start bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
-                >
-                  Registrations & Attendance
-                </button>
-              </div>
+              )}
             </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </section>
-)}
+
+            {/* Past */}
+            <div>
+              <h3 className="text-xl sm:text-2xl font-bold text-green-400 mb-4">
+                Past Events ({pastEvents.length})
+              </h3>
+              {pastEvents.length === 0 ? (
+                <p className="text-gray-400 text-sm sm:text-base">
+                  No past events yet.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {pastEvents.map((event) => (
+                    <div
+                      key={event._id}
+                      className="bg-gray-800/80 border border-green-600 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-green-600/20 transition-all"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-base sm:text-lg font-semibold text-white">
+                          {event.name}
+                        </h4>
+                        <span className="bg-green-600 text-white text-[11px] sm:text-xs px-2 py-1 rounded-full">
+                          PAST
+                        </span>
+                      </div>
+
+                      <div className="space-y-1 mb-2 text-xs sm:text-sm text-gray-300">
+                        <p>{event.date}</p>
+                        <p>{event.venue}</p>
+                        <p>Strength: {event.strength}</p>
+                        <p className="font-semibold">
+                          Fee: {' '}
+                          {!event.registrationFee || event.registrationFee === 0 ? (
+                            <span className="text-green-400">FREE</span>
+                          ) : (
+                            <span className="text-yellow-400">₹{event.registrationFee}</span>
+                          )}
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-gray-500">
+                          Created by {event.createdBy?.fullName || "Unknown"}
+                        </p>
+                        <p className="text-[11px] sm:text-xs">
+                          {event.shortDesc}
+                        </p>
+                      </div>
+
+                      {/* Feedback input */}
+                      <div className="mt-3">
+                        <label className="block text-[11px] sm:text-xs text-gray-400 mb-1">
+                          Your Feedback
+                        </label>
+                        <textarea
+                          rows={2}
+                          placeholder="Share your experience about this event"
+                          value={feedbackInputs[event._id] || ""}
+                          onChange={(e) =>
+                            setFeedbackInputs((prev) => ({
+                              ...prev,
+                              [event._id]: e.target.value,
+                            }))
+                          }
+                          className="w-full p-2 rounded bg-gray-900 border border-gray-600 text-white text-[11px] sm:text-xs focus:border-blue-500 focus:outline-none"
+                        />
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
+                          <button
+                            onClick={() => submitFeedback(event._id)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-xs py-1.5 px-3 rounded transition"
+                          >
+                            Submit Feedback
+                          </button>
+                          <button
+                            onClick={() => loadFeedbackForEvent(event._id)}
+                            className="text-[11px] sm:text-xs text-blue-300 underline hover:text-blue-200"
+                          >
+                            {loadingFeedback[event._id]
+                              ? "Loading..."
+                              : "View Feedbacks"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Feedback list */}
+                      {feedbackList[event._id] &&
+                        feedbackList[event._id].length > 0 && (
+                          <div className="mt-3 border-t border-gray-700 pt-2 max-h-32 overflow-y-auto">
+                            <p className="text-[11px] sm:text-xs text-gray-400 mb-1">
+                              Feedback from participants/admin:
+                            </p>
+                            {feedbackList[event._id].map((fb) => (
+                              <div key={fb._id} className="mb-2">
+                                <p className="text-[11px] sm:text-xs text-blue-300 font-semibold">
+                                  {fb.userName || "User"}
+                                </p>
+                                <p className="text-[11px] sm:text-xs text-gray-200">
+                                  {fb.feedback}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                      {/* Actions */}
+                      <div className="flex flex-col gap-2 mt-3">
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button
+                            onClick={() => handleEditClick(event)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteApproved(event._id)}
+                            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded transition text-xs sm:text-sm"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => openAttendanceModal(event)}
+                          className="self-start bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
+                        >
+                          Registrations & Attendance
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
 
         {/* Users */}
         {activeTab === "users" && (
-  <section className="space-y-6">
-    <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <h3 className="text-xl sm:text-2xl font-bold text-blue-400">
-        All Users ({users.length})
-      </h3>
-      <button
-        onClick={getAllUsers}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
-      >
-        Refresh
-      </button>
-    </div>
+          <section className="space-y-6">
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-blue-400">
+                All Users ({users.length})
+              </h3>
+              <button
+                onClick={getAllUsers}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+              >
+                Refresh
+              </button>
+            </div>
 
             {loadingUsers ? (
               <p className="text-gray-400">Loading users...</p>
@@ -1627,8 +1708,8 @@ function AdminDashboard() {
               <div className="space-y-8">
                 <div>
                   <h4 className="text-lg sm:text-xl font-semibold text-red-400 mb-3">
-  Admins ({adminUsers.length})
-</h4>
+                    Admins ({adminUsers.length})
+                  </h4>
                   {adminUsers.length === 0 ? (
                     <p className="text-sm text-gray-500">
                       No admins.
@@ -1660,50 +1741,50 @@ function AdminDashboard() {
                 </div>
 
                 <div>
-  <h4 className="text-lg sm:text-xl font-semibold text-green-400 mb-3">
-    Users by Branch
-  </h4>
+                  <h4 className="text-lg sm:text-xl font-semibold text-green-400 mb-3">
+                    Users by Branch
+                  </h4>
 
-  {userBranchNames.length === 0 ? (
-    <p className="text-xs sm:text-sm text-gray-500">No users.</p>
-  ) : (
-    <div>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mb-3">
-        <label className="text-xs sm:text-sm text-gray-300">
-          Select Branch
-        </label>
-        <select
-          value={selectedUserBranch}
-          onChange={(e) => setSelectedUserBranch(e.target.value)}
-          className="bg-gray-900 border border-gray-600 text-white text-xs sm:text-sm px-3 py-1.5 rounded focus:outline-none focus:border-blue-500 w-full sm:w-auto"
-        >
-          <option value="">-- Choose branch --</option>
-          {userBranchNames.map((b) => (
-            <option key={b} value={b}>
-              {b}
-            </option>
-          ))}
-        </select>
-      </div>
+                  {userBranchNames.length === 0 ? (
+                    <p className="text-xs sm:text-sm text-gray-500">No users.</p>
+                  ) : (
+                    <div>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mb-3">
+                        <label className="text-xs sm:text-sm text-gray-300">
+                          Select Branch
+                        </label>
+                        <select
+                          value={selectedUserBranch}
+                          onChange={(e) => setSelectedUserBranch(e.target.value)}
+                          className="bg-gray-900 border border-gray-600 text-white text-xs sm:text-sm px-3 py-1.5 rounded focus:outline-none focus:border-blue-500 w-full sm:w-auto"
+                        >
+                          <option value="">-- Choose branch --</option>
+                          {userBranchNames.map((b) => (
+                            <option key={b} value={b}>
+                              {b}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-      {selectedUserBranch === "" ? (
-        <p className="text-xs sm:text-sm text-gray-500">
-          Please select a branch to view users.
-        </p>
-      ) : filteredUserUsers.length === 0 ? (
-        <p className="text-xs sm:text-sm text-gray-500">
-          No users found in {selectedUserBranch}.
-        </p>
-      ) : (
-        <UserTable
-          rows={filteredUserUsers}
-          onChangeRole={handleChangeRole}
-          onViewProfile={loadUserRegistrations}
-        />
-      )}
-    </div>
-  )}
-</div>
+                      {selectedUserBranch === "" ? (
+                        <p className="text-xs sm:text-sm text-gray-500">
+                          Please select a branch to view users.
+                        </p>
+                      ) : filteredUserUsers.length === 0 ? (
+                        <p className="text-xs sm:text-sm text-gray-500">
+                          No users found in {selectedUserBranch}.
+                        </p>
+                      ) : (
+                        <UserTable
+                          rows={filteredUserUsers}
+                          onChangeRole={handleChangeRole}
+                          onViewProfile={loadUserRegistrations}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
 
               </div>
             )}
@@ -1756,7 +1837,7 @@ function AdminDashboard() {
                       console.error(err);
                       alert(
                         err.response?.data?.message ||
-                          "Failed to create venue"
+                        "Failed to create venue"
                       );
                     });
                 }}
@@ -1831,7 +1912,7 @@ function AdminDashboard() {
                 </p>
               ) : (
                 <div className="bg-gray-800/80 border border-gray-700 rounded-2xl overflow-x-auto">
-                   <table className="min-w-full text-xs sm:text-sm">
+                  <table className="min-w-full text-xs sm:text-sm">
                     <thead className="bg-gray-900/80">
                       <tr>
                         <th className="px-4 py-2 text-left text-gray-300">
@@ -1872,8 +1953,8 @@ function AdminDashboard() {
                           <td className="px-4 py-2 text-gray-400">
                             {v.createdAt
                               ? new Date(
-                                  v.createdAt
-                                ).toLocaleDateString()
+                                v.createdAt
+                              ).toLocaleDateString()
                               : "-"}
                           </td>
                         </tr>
@@ -1888,101 +1969,99 @@ function AdminDashboard() {
 
         {/* Notifications */}
         {activeTab === "notifications" && (
-  <section className="space-y-4">
-    {/* Header */}
-    <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <h3 className="text-xl sm:text-2xl font-bold text-blue-400">
-        Notifications ({notificationsData.length})
-      </h3>
-      <div className="flex flex-wrap gap-2 sm:gap-3">
-        <button
-          onClick={handleNotifications}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded transition text-xs sm:text-sm"
-        >
-          Refresh
-        </button>
-        <button
-          onClick={handleMarkAllRead}
-          className="bg-gray-700 hover:bg-gray-800 text-white px-3 sm:px-4 py-2 rounded transition text-[11px] sm:text-sm"
-        >
-          Mark all as read
-        </button>
-      </div>
-    </div>
-
-    {/* Loading / error */}
-    {loadingNotifications && (
-      <p className="text-gray-400 text-sm">Loading notifications...</p>
-    )}
-    {notificationsError && (
-      <p className="text-red-400 text-sm mb-2">{notificationsError}</p>
-    )}
-
-    {/* Empty state */}
-    {notificationsData.length === 0 && !loadingNotifications ? (
-      <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
-        <p className="text-gray-400 text-sm sm:text-lg">
-          No notifications right now
-        </p>
-      </div>
-    ) : (
-      /* Cards grid */
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        {notificationsData.map((n) => (
-          <div
-            key={n._id}
-            className={`bg-gray-800/80 border-2 p-4 sm:p-6 rounded-2xl shadow-lg transition-all ${
-              n.isRead
-                ? "border-gray-700 hover:shadow-gray-500/20"
-                : "border-blue-500 hover:shadow-blue-500/30"
-            }`}
-          >
-            <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2">
-              <div>
-                <h4 className="text-lg sm:text-xl font-semibold text-white mb-1">
-                  {n.title}
-                </h4>
-                <p className="text-gray-300 text-xs sm:text-sm whitespace-pre-line">
-                  {n.message}
-                </p>
-                {n.eventId && (
-                  <p className="text-gray-400 text-[11px] sm:text-xs mt-2">
-                    Related to event ID{" "}
-                    <span className="text-blue-400">{n.eventId}</span>
-                  </p>
-                )}
-              </div>
-              <span
-                className={`text-[11px] sm:text-xs px-3 py-1 rounded-full ${
-                  n.isRead ? "bg-gray-600 text-white" : "bg-blue-600 text-white"
-                }`}
-              >
-                {n.isRead ? "READ" : "NEW"}
-              </span>
-            </div>
-
-            <div className="mb-3 text-[11px] sm:text-xs text-gray-400">
-              {n.createdAt && (
-                <span>{new Date(n.createdAt).toLocaleString()}</span>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              {!n.isRead && (
+          <section className="space-y-4">
+            {/* Header */}
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-blue-400">
+                Notifications ({notificationsData.length})
+              </h3>
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 <button
-                  onClick={() => handleMarkOneRead(n._id)}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
+                  onClick={handleNotifications}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded transition text-xs sm:text-sm"
                 >
-                  Mark as read
+                  Refresh
                 </button>
-              )}
+                <button
+                  onClick={handleMarkAllRead}
+                  className="bg-gray-700 hover:bg-gray-800 text-white px-3 sm:px-4 py-2 rounded transition text-[11px] sm:text-sm"
+                >
+                  Mark all as read
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </section>
-)}
+
+            {/* Loading / error */}
+            {loadingNotifications && (
+              <p className="text-gray-400 text-sm">Loading notifications...</p>
+            )}
+            {notificationsError && (
+              <p className="text-red-400 text-sm mb-2">{notificationsError}</p>
+            )}
+
+            {/* Empty state */}
+            {notificationsData.length === 0 && !loadingNotifications ? (
+              <div className="bg-gray-800/80 border border-gray-700 p-6 sm:p-8 rounded-2xl text-center">
+                <p className="text-gray-400 text-sm sm:text-lg">
+                  No notifications right now
+                </p>
+              </div>
+            ) : (
+              /* Cards grid */
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {notificationsData.map((n) => (
+                  <div
+                    key={n._id}
+                    className={`bg-gray-800/80 border-2 p-4 sm:p-6 rounded-2xl shadow-lg transition-all ${n.isRead
+                      ? "border-gray-700 hover:shadow-gray-500/20"
+                      : "border-blue-500 hover:shadow-blue-500/30"
+                      }`}
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2">
+                      <div>
+                        <h4 className="text-lg sm:text-xl font-semibold text-white mb-1">
+                          {n.title}
+                        </h4>
+                        <p className="text-gray-300 text-xs sm:text-sm whitespace-pre-line">
+                          {n.message}
+                        </p>
+                        {n.eventId && (
+                          <p className="text-gray-400 text-[11px] sm:text-xs mt-2">
+                            Related to event ID{" "}
+                            <span className="text-blue-400">{n.eventId}</span>
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={`text-[11px] sm:text-xs px-3 py-1 rounded-full ${n.isRead ? "bg-gray-600 text-white" : "bg-blue-600 text-white"
+                          }`}
+                      >
+                        {n.isRead ? "READ" : "NEW"}
+                      </span>
+                    </div>
+
+                    <div className="mb-3 text-[11px] sm:text-xs text-gray-400">
+                      {n.createdAt && (
+                        <span>{new Date(n.createdAt).toLocaleString()}</span>
+                      )}
+                    </div>
+
+                    <div className="flex gap-3">
+                      {!n.isRead && (
+                        <button
+                          onClick={() => handleMarkOneRead(n._id)}
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition font-semibold text-xs sm:text-sm"
+                        >
+                          Mark as read
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
       </div>
 
@@ -2107,105 +2186,103 @@ function AdminDashboard() {
             ) : (
               <div className="max-h-72 overflow-y-auto">
                 <div className="overflow-x-auto">
-                <table className="w-full text-[11px] sm:text-xs text-left">
-                  <thead className="bg-gray-800 text-gray-300">
-                    <tr>
-                      <th className="px-2 py-1">Name</th>
-                      <th className="px-2 py-1">Email</th>
-                      <th className="px-2 py-1">Branch</th>
-                      <th className="px-2 py-1">Roll</th>
-                      <th className="px-2 py-1">Status</th>
-                      <th className="px-2 py-1">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {eventRegistrations.map((r) => {
-                      const eventDateObj = new Date(
-                        attendanceEvent.date
-                      );
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      eventDateObj.setHours(0, 0, 0, 0);
-                      const canMarkAttendance =
-                        eventDateObj <= today;
-                      return (
-                        <tr
-                          key={r.userId}
-                          className="border-t border-gray-800"
-                        >
-                          <td className="px-2 py-1 text-gray-100">
-                            {r.fullName}
-                          </td>
-                          <td className="px-2 py-1 text-gray-300">
-                            {r.email}
-                          </td>
-                          <td className="px-2 py-1 text-gray-300">
-                            {r.branch || "-"}
-                          </td>
-                          <td className="px-2 py-1 text-gray-300">
-                            {r.rollNumber || "-"}
-                          </td>
-                          <td className="px-2 py-1">
-                            {r.attendanceStatus ===
-                              "present" && (
-                              <span className="text-green-400 font-semibold">
-                                Present
-                              </span>
-                            )}
-                            {r.attendanceStatus === "absent" && (
-                              <span className="text-red-400 font-semibold">
-                                Absent
-                              </span>
-                            )}
-                            {r.attendanceStatus ===
-                              "not_marked" && (
-                              <span className="text-gray-400">
-                                Not marked
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-2 py-1">
-                            <div className="flex gap-1">
-                              <button
-                                disabled={!canMarkAttendance}
-                                onClick={() =>
-                                  markAttendance(
-                                    r.userId,
-                                    "present"
-                                  )
-                                }
-                                className={`bg-green-600 hover:bg-green-700 text-white px-2 py-0.5 rounded ${
-                                  !canMarkAttendance
+                  <table className="w-full text-[11px] sm:text-xs text-left">
+                    <thead className="bg-gray-800 text-gray-300">
+                      <tr>
+                        <th className="px-2 py-1">Name</th>
+                        <th className="px-2 py-1">Email</th>
+                        <th className="px-2 py-1">Branch</th>
+                        <th className="px-2 py-1">Roll</th>
+                        <th className="px-2 py-1">Status</th>
+                        <th className="px-2 py-1">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {eventRegistrations.map((r) => {
+                        const eventDateObj = new Date(
+                          attendanceEvent.date
+                        );
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        eventDateObj.setHours(0, 0, 0, 0);
+                        const canMarkAttendance =
+                          eventDateObj <= today;
+                        return (
+                          <tr
+                            key={r.userId}
+                            className="border-t border-gray-800"
+                          >
+                            <td className="px-2 py-1 text-gray-100">
+                              {r.fullName}
+                            </td>
+                            <td className="px-2 py-1 text-gray-300">
+                              {r.email}
+                            </td>
+                            <td className="px-2 py-1 text-gray-300">
+                              {r.branch || "-"}
+                            </td>
+                            <td className="px-2 py-1 text-gray-300">
+                              {r.rollNumber || "-"}
+                            </td>
+                            <td className="px-2 py-1">
+                              {r.attendanceStatus ===
+                                "present" && (
+                                  <span className="text-green-400 font-semibold">
+                                    Present
+                                  </span>
+                                )}
+                              {r.attendanceStatus === "absent" && (
+                                <span className="text-red-400 font-semibold">
+                                  Absent
+                                </span>
+                              )}
+                              {r.attendanceStatus ===
+                                "not_marked" && (
+                                  <span className="text-gray-400">
+                                    Not marked
+                                  </span>
+                                )}
+                            </td>
+                            <td className="px-2 py-1">
+                              <div className="flex gap-1">
+                                <button
+                                  disabled={!canMarkAttendance}
+                                  onClick={() =>
+                                    markAttendance(
+                                      r.userId,
+                                      "present"
+                                    )
+                                  }
+                                  className={`bg-green-600 hover:bg-green-700 text-white px-2 py-0.5 rounded ${!canMarkAttendance
                                     ? "opacity-50 cursor-not-allowed"
                                     : ""
-                                }`}
-                              >
-                                Present
-                              </button>
-                              <button
-                                disabled={!canMarkAttendance}
-                                onClick={() =>
-                                  markAttendance(
-                                    r.userId,
-                                    "absent"
-                                  )
-                                }
-                                className={`bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded ${
-                                  !canMarkAttendance
+                                    }`}
+                                >
+                                  Present
+                                </button>
+                                <button
+                                  disabled={!canMarkAttendance}
+                                  onClick={() =>
+                                    markAttendance(
+                                      r.userId,
+                                      "absent"
+                                    )
+                                  }
+                                  className={`bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded ${!canMarkAttendance
                                     ? "opacity-50 cursor-not-allowed"
                                     : ""
-                                }`}
-                              >
-                                Absent
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                                    }`}
+                                >
+                                  Absent
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>

@@ -85,7 +85,9 @@ function CompactEventCalendar({ events = [] }) {
       <button
         key={day}
         onClick={() => handleDateClick(day)}
-        className={`aspect-square p-1 rounded text-xs font-medium transition-all relative flex items-center justify-center
+        className={`aspect-square p-0.5 sm:p-1 rounded text-[10px] sm:text-xs font-medium transition-all relative flex items-center justify-center
+
+
           ${isToday ? "ring-1 ring-blue-400" : ""}
           ${isSelected ? "bg-blue-600 text-white" : ""}
           ${hasEvent && !isSelected ? "bg-green-500 text-white font-bold" : ""}
@@ -102,8 +104,10 @@ function CompactEventCalendar({ events = [] }) {
   const selectedDayEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
   return (
-    <div className="bg-gray-800/90 border border-gray-700 rounded-xl shadow-lg p-3 w-64">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-gray-800/90 border border-gray-700 rounded-xl shadow-lg p-3 sm:p-4 w-full max-w-xs">
+
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+
         <button
           onClick={previousMonth}
           className="p-1 hover:bg-gray-700/50 rounded transition"
@@ -135,7 +139,7 @@ function CompactEventCalendar({ events = [] }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-1">
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-1 mb-1">
         {dayNames.map((day) => (
           <div
             key={day}
@@ -146,9 +150,10 @@ function CompactEventCalendar({ events = [] }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-3">{calendarDays}</div>
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-1 mb-2 sm:mb-3"></div><div className="grid grid-cols-7 gap-1 mb-3">{calendarDays}</div>
 
-      <div className="flex items-center justify-center gap-3 pt-2 border-t border-gray-700/50 text-xs">
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2 border-t border-gray-700/50 text-[10px] sm:text-xs">
+
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded bg-green-500" />
           <span className="text-gray-400">Event</span>
@@ -160,7 +165,7 @@ function CompactEventCalendar({ events = [] }) {
       </div>
 
       {showEventDetails && selectedDate && (
-        <div className="mt-3 pt-3 border-top border-gray-700/50">
+        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-700/50">
           <div className="flex justify-between items-center mb-2">
             <h5 className="text-xs font-semibold text-gray-300">
               {new Date(
@@ -190,13 +195,13 @@ function CompactEventCalendar({ events = [] }) {
             </button>
           </div>
           {selectedDayEvents.length === 0 ? (
-            <p className="text-xs text-gray-500 italic">No events</p>
+            <p className="text-[10px] sm:text-xs text-gray-500 italic">No events</p>
           ) : (
-            <div className="space-y-1 max-h-32 overflow-y-auto">
+            <div className="space-y-1 max-h-28 sm:max-h-32 overflow-y-auto">
               {selectedDayEvents.map((event) => (
                 <div
                   key={event._id}
-                  className="bg-gray-700/40 p-2 rounded text-xs"
+                    className="bg-gray-700/40 p-1.5 sm:p-2 rounded text-[10px] sm:text-xs"
                 >
                   <p className="text-white font-medium truncate">
                     {event.name}
@@ -613,77 +618,163 @@ function OrganizerDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       {/* Fixed calendar on the left for large screens */}
-      <div className="hidden lg:block fixed top-28 left-4 z-40">
-        <CompactEventCalendar events={eventsData} />
-      </div>
 
       {/* Main content shifted right so it doesn't overlap calendar */}
       <div className="lg:ml-80">
         {/* Navbar */}
-        <nav className="bg-gray-950 bg-opacity-80 backdrop-blur-md text-white px-8 py-4 flex justify-between items-center shadow-lg border-b border-gray-700">
-          <h1 className="text-2xl font-bold text-blue-400">
-            Event Coordination Engine
-          </h1>
-          <div className="flex space-x-8 text-lg">
-            <a href="/home" className="hover:text-blue-300 transition">
-              Home
-            </a>
-            <button
-              onClick={() => setActiveTab("events")}
-              className="hover:text-blue-300 transition"
-            >
-              Browse Events
-            </button>
-            <button
-              onClick={() => setActiveTab("users")}
-              className="hover:text-blue-300 transition"
-            >
-              Users
-            </button>
-            <button
-              onClick={() => {
-                handleNotifications();
-                setActiveTab("notifications");
-              }}
-              className="hover:text-red-400 transition"
-            >
-              Notifications
-            </button>
-            <button
-              onClick={() => {
-                setShowEventForm(true)
-                setActiveTab("eventForm")
-              }}
-              className="hover:text-green-300 transition"
-            >
-              {"Create Event"}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="hover:text-red-400 transition"
-            >
-              Logout
-            </button>
-          </div>
-        </nav>
+        <nav className="bg-gray-950/80 backdrop-blur-md text-white px-4 sm:px-6 lg:px-10 py-3 sm:py-4 border-b border-gray-700 shadow-lg">
+  <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3">
+    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400">
+      Event Coordination Engine
+    </h1>
+
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm md:text-base">
+  {/* Calendar tab */}
+  <button
+    onClick={() => setActiveTab("calendar")}
+    className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+      activeTab === "calendar" ? "text-blue-400 font-bold" : ""
+    }`}
+  >
+    Calendar
+  </button>
+
+  {/* All events */}
+  <button
+    onClick={() => setActiveTab("events")}
+    className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+      activeTab === "events" ? "text-blue-400 font-bold" : ""
+    }`}
+  >
+    ALL EVENTS
+  </button>
+
+  {/* Users */}
+  <button
+    onClick={() => setActiveTab("users")}
+    className={`px-2 py-1 rounded hover:text-blue-300 transition ${
+      activeTab === "users" ? "text-blue-400 font-bold" : ""
+    }`}
+  >
+    Users
+  </button>
+
+  {/* Notifications */}
+  <button
+    onClick={() => {
+      handleNotifications();
+      setActiveTab("notifications");
+    }}
+    className={`px-2 py-1 rounded hover:text-red-400 transition ${
+      activeTab === "notifications" ? "text-red-400 font-bold" : ""
+    }`}
+  >
+    Notifications
+  </button>
+
+  {/* Create Event */}
+  <button
+    onClick={() => {
+      setShowEventForm(true);
+      setActiveTab("eventForm");
+    }}
+    className={`px-2 py-1 rounded hover:text-green-300 transition ${
+      activeTab === "eventForm" ? "text-green-300 font-bold" : ""
+    }`}
+  >
+    Create Event
+  </button>
+
+  {/* Logout */}
+  <button
+    onClick={handleLogout}
+    className="px-2 py-1 rounded hover:text-red-400 transition"
+  >
+    Logout
+  </button>
+</div>
+
+  </div>
+</nav>
+
 
         {/* Hero Section */}
-        <section className="text-center py-12">
-          <h2 className="text-4xl font-bold text-blue-400 tracking-wide">
-            Welcome, <span className="text-white">Organizer</span>
-          </h2>
-          <p className="text-gray-400 mt-3 text-lg">
-            Manage all users and events
-          </p>
-          <button
-            onClick={() => {
-              setActiveTab("events")
-            }}
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition"
-          >
-            Browse Events
-          </button>
-        </section>
+  {/* Hero Section */}
+<section className="text-center py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-400 tracking-wide">
+    Welcome, <span className="text-white">Organizer</span>
+  </h2>
+
+  <p className="text-gray-400 mt-2 sm:mt-3 text-sm sm:text-base">
+    {activeTab === "events" && "Discover and register for exciting upcoming events"}
+    {activeTab === "registered" && "View events you have registered for"}
+    {activeTab === "attended" && "Review events you have already attended"}
+    {activeTab === "notifications" && "See your latest notifications"}
+    {activeTab === "eventForm" && "Create or edit your events for admin approval"}
+  </p>
+  {/* Calendar tab */}
+{activeTab === "calendar" && (
+  <section className="px-4 sm:px-6 lg:px-10 pb-12">
+    <div className="mx-auto max-w-6xl">
+      <h2 className="text-2xl sm:text-3xl font-bold text-blue-400">
+        Event Calendar
+      </h2>
+      <p className="text-gray-400 text-sm sm:text-base mt-2">
+        View all events in calendar view
+      </p>
+    </div>
+    <CompactEventCalendar events={eventsData} />
+  </section>
+)}
+
+
+  {activeTab === "events" && (
+    <button
+      onClick={() => setActiveTab("events")}
+      className="mt-4 sm:mt-6 bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg transition text-sm sm:text-base"
+    >
+      Browse Events
+    </button>
+  )}
+
+  {activeTab === "registered" && (
+    <button
+      onClick={() => setActiveTab("registered")}
+      className="mt-4 sm:mt-6 bg-green-600 hover:bg-green-700 text-white px-5 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg transition text-sm sm:text-base"
+    >
+      View Registered Events
+    </button>
+  )}
+
+  {activeTab === "attended" && (
+    <button
+      onClick={() => setActiveTab("attended")}
+      className="mt-4 sm:mt-6 bg-purple-600 hover:bg-purple-700 text-white px-5 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg transition text-sm sm:text-base"
+    >
+      View Attended Events
+    </button>
+  )}
+
+  {activeTab === "notifications" && (
+    <button
+      onClick={() => setActiveTab("notifications")}
+      className="mt-4 sm:mt-6 bg-red-600 hover:bg-red-700 text-white px-5 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg transition text-sm sm:text-base"
+    >
+      View Notifications
+    </button>
+  )}
+
+  {activeTab === "eventForm" && (
+    <button
+      onClick={() => setActiveTab("eventForm")}
+      className="mt-4 sm:mt-6 bg-emerald-600 hover:bg-emerald-700 text-white px-5 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg transition text-sm sm:text-base"
+    >
+      Create Event
+    </button>
+  )}
+</section>
+
+
 
         {/* Event Creation/Edit Form */}
         {(activeTab === "eventForm" && showEventForm) && (
@@ -791,7 +882,7 @@ function OrganizerDashboard() {
 
         {/* Notifications */}
         {activeTab === "notifications" && (
-          <div className="px-10 pb-12">
+          <div className="px-4 sm:px-6 lg:px-4 pb-10">
             <section>
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-2xl font-bold text-blue-400">
@@ -884,7 +975,7 @@ function OrganizerDashboard() {
 
         {/* Events (upcoming + past) */}
         {activeTab === "events" && (
-          <div className="px-10 pb-12">
+           <div className="px-4 sm:px-6 lg:px-10 pb-12 mx-auto max-w-7xl">
             <div className="flex flex-col md:flex-row gap-10 relative">
               {/* Browse by Date */}
               <div className="absolute right-0 top-0 md:top-[-50px] flex flex-col items-end">
@@ -918,7 +1009,8 @@ function OrganizerDashboard() {
                       No upcoming events right now.
                     </p>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+
                       {filteredUpcomingEvents.map((event) => {
                         return (
                           <div
@@ -1108,7 +1200,7 @@ function OrganizerDashboard() {
 
         {/* Users */}
         {activeTab === "users" && (
-          <div className="px-10 pb-16" id="users">
+          <div className="px-4 sm:px-6 lg:px-10 pb-16" id="users">
             <section className="mb-12">
               <h3 className="text-2xl font-bold mb-4 text-blue-400">
                 Organizers
