@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { base_url } from "../components/baseUrl";
+import { Link } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -89,12 +90,9 @@ function Login() {
 
         <p className="mt-6 text-center text-gray-300 text-lg">
           Don’t have an account?{" "}
-          <a
-            href="/register"
-            className="text-blue-400 font-semibold hover:underline"
-          >
-            Register
-          </a>
+          <Link to="/register" className="text-blue-400 font-semibold hover:underline">
+  Register
+</Link>
         </p>
       </div>
     </div>
