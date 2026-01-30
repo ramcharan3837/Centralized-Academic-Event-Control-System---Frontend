@@ -1,9 +1,12 @@
-import { useState, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";  // SINGLE import
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { base_url } from "../components/baseUrl";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
+import ModalPopup from "./ModalPopup";
+
+
 
 const BRANCH_OPTIONS = ["CSE", "ECE", "CIVIL", "MECHANICAL", "MCA"];
 const ROLE_OPTIONS = [
@@ -19,28 +22,48 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+  const [type, setType] = useState("");
+  const [message, setMessage] = useState("");
+  const [buttons, setButtons] = useState([]);
+   useEffect(() => {
+    if (showPopup && type === "success") {
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+        navigate("/login");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup, type, navigate]);
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    if (!branch) {
-      alert("Please select a branch");
-      return;
-    }
-    const newUser = { fullName, rollNumber, branch, role, email, password };
-    try {
-      const res = await axios.post(`${base_url}register`, newUser);
-      alert(res?.data?.message);
-      setFullName("");
-      setRollNumber("");
-      setBranch("");
-      setRole("user");
-      setEmail("");
-      setPassword("");
-      navigate("/login");
-    } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
-    }
-  };
+
+const handleRegister = async (e) => {
+  e.preventDefault();
+  if (!branch) {
+    setType("error");
+    setMessage("Please select a branch");
+    setButtons([{ text: 'OK', action: () => setShowPopup(false) }]);
+    setShowPopup(true);
+    return;
+  }
+  const newUser = { fullName, rollNumber, branch, role, email, password };
+  try {
+    const res = await axios.post(`${base_url}register`, newUser);
+    setType("success");
+    setMessage(res?.data?.message || "Registration successful!");
+    setButtons([{ text: 'Continue to Login', action: () => { setShowPopup(false); navigate("/login"); } }]);
+    setShowPopup(true);
+    
+    // Reset form
+    setFullName(""); setRollNumber(""); setBranch(""); setRole("user"); setEmail(""); setPassword("");
+  } catch (err) {
+    setType("error");
+    setMessage(err.response?.data?.message || "Registration failed");
+    setButtons([{ text: 'Retry', action: () => setShowPopup(false) }]);
+    setShowPopup(true);
+  }
+};
+
 
   const currentRoleObj =
     ROLE_OPTIONS.find((r) => r.value === role) || ROLE_OPTIONS[0];
@@ -113,19 +136,17 @@ function Register() {
                     <Listbox.Option
                       value=""
                       className={({ active }) =>
-                        `relative cursor-pointer select-none py-2 pl-4 pr-10 ${
-                          active ? "bg-blue-600 text-white" : "text-gray-200"
+                        `relative cursor-pointer select-none py-2 pl-4 pr-10 ${active ? "bg-blue-600 text-white" : "text-gray-200"
                         }`
                       }
                     >
                       {({ selected }) => (
                         <>
                           <span
-                            className={`block truncate ${
-                              selected ? "font-medium" : "font-normal"
-                            }`}
+                            className={`block truncate ${selected ? "font-medium" : "font-normal"
+                              }`}
                           >
-                             🏫 Select Branch
+                            🏫 Select Branch
                           </span>
                           {selected && (
                             <span className="absolute inset-y-0 right-3 flex items-center text-blue-300">
@@ -140,17 +161,15 @@ function Register() {
                         key={b}
                         value={b}
                         className={({ active }) =>
-                          `relative cursor-pointer select-none py-2 pl-4 pr-10 ${
-                            active ? "bg-blue-600 text-white" : "text-gray-200"
+                          `relative cursor-pointer select-none py-2 pl-4 pr-10 ${active ? "bg-blue-600 text-white" : "text-gray-200"
                           }`
                         }
                       >
                         {({ selected }) => (
                           <>
                             <span
-                              className={`block truncate ${
-                                selected ? "font-medium" : "font-normal"
-                              }`}
+                              className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                }`}
                             >
                               {b}
                             </span>
@@ -197,17 +216,15 @@ function Register() {
                         key={r.value}
                         value={r}
                         className={({ active }) =>
-                          `relative cursor-pointer select-none py-2 pl-4 pr-10 ${
-                            active ? "bg-blue-600 text-white" : "text-gray-200"
+                          `relative cursor-pointer select-none py-2 pl-4 pr-10 ${active ? "bg-blue-600 text-white" : "text-gray-200"
                           }`
                         }
                       >
                         {({ selected }) => (
                           <>
                             <span
-                              className={`block truncate ${
-                                selected ? "font-medium" : "font-normal"
-                              }`}
+                              className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                }`}
                             >
                               {r.label}
                             </span>
@@ -275,6 +292,8 @@ function Register() {
           </button>
         </p>
       </div>
+      <ModalPopup showPopup={showPopup} type={type} message={message} buttons={buttons} />
+
     </div>
   );
 }
