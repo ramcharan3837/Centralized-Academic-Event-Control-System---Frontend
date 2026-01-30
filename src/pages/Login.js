@@ -33,7 +33,7 @@ useEffect(() => {
         console.error("Navigation error:", e);
         navigate("/user-dashboard"); // Safe fallback
       }
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }
