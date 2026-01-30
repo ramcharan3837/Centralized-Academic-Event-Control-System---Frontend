@@ -1,14 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; // ADD useEffect
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { base_url } from "../components/baseUrl";
 import { Link } from "react-router-dom";
+import ModalPopup from "./ModalPopup";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+  const [type, setType] = useState("");
+  const [message, setMessage] = useState("");
+  const [buttons, setButtons] = useState([]);
+  
+  // NEW: Auto-close modal and navigate after 2 seconds
+useEffect(() => {
+  if (showPopup && type === "success") {
+    const timer = setTimeout(() => {
+      setShowPopup(false);
+      
+      // FIX: Get role from stored user OR fallback
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const userRole = storedUser.role || "user";
+        
+        if (userRole === "admin") navigate("/admin-dashboard");
+        else if (userRole === "organizer") navigate("/organizer-dashboard");
+        else navigate("/user-dashboard");
+      } catch (e) {
+        console.error("Navigation error:", e);
+        navigate("/user-dashboard"); // Safe fallback
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }
+}, [showPopup, type, navigate]);
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,25 +46,46 @@ function Login() {
       const res = await axios.post(`${base_url}login`, { email, password, role });
 
       if (res.data.status === "Success") {
-        alert(res.data.message);
+        // Store token/user FIRST
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
 
-        if (res.data.user.role === "admin") navigate("/admin-dashboard");
-        else if (res.data.user.role === "organizer") navigate("/organizer-dashboard");
-        else navigate("/user-dashboard");
+        // Show success modal
+        setType("success");
+        setMessage(res.data.message || "Login successful!");
+        setButtons([
+          {
+            text: 'Close',
+            action: () => {
+              setShowPopup(false);
+            }
+          }
+        ]);
+        setShowPopup(true);
+
+        // REMOVED: Navigation moved to useEffect
       } else {
-        alert(res.data.message || "Login failed");
+        setType("error");
+        setMessage(res.data.message || "Login failed");
+        setButtons([
+          { text: 'OK', action: () => setShowPopup(false) }
+        ]);
+        setShowPopup(true);
       }
     } catch (err) {
       console.error("Login error:", err);
-      alert("Server error — please check backend connection");
+      setType("error");
+      setMessage("Server error — check backend connection");
+      setButtons([
+        { text: 'Retry', action: () => setShowPopup(false) }
+      ]);
+      setShowPopup(true);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center relative overflow-hidden">
-      {/* Animated background circles */}
+      {/* Background circles */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/20 rounded-full animate-pulse"></div>
       <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-600/20 rounded-full animate-pulse"></div>
 
@@ -89,12 +140,20 @@ function Login() {
         </form>
 
         <p className="mt-6 text-center text-gray-300 text-lg">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link to="/register" className="text-blue-400 font-semibold hover:underline">
-  Register
-</Link>
+            Register
+          </Link>
         </p>
       </div>
+
+      {/* Modal always rendered but controlled by showPopup */}
+      <ModalPopup 
+        showPopup={showPopup} 
+        type={type} 
+        message={message} 
+        buttons={buttons} 
+      />
     </div>
   );
 }
