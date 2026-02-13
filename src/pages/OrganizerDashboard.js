@@ -413,20 +413,24 @@ function OrganizerDashboard() {
     shortDesc, about, learning,
     registrationFee: registrationFee ? parseInt(registrationFee) : 0
   };
+  console.log(eventData)
   const token = localStorage.getItem('token');
   const config = { headers: { Authorization: `Bearer ${token}` } };
   
   try {
-    let updatedEvents;
+    let updatedEvents=[];
+    console.log(updatedEvents)
     if (editEvent) {
+      console.log("entered")
       // UPDATE
-      const res = await axios.put(`${baseurl}/events/${editEvent.id}`, eventData, config);
+      const res = await axios.put(`${base_url}events/${editEvent._id}`, eventData, config);
+      console.log("apicall")
       alert('Event updated successfully!');
       // Optimistic local update
-      updatedEvents = eventsData.map(ev => ev.id === editEvent.id ? { ...ev, ...eventData } : ev);
+      updatedEvents = eventsData.map(ev => ev._id === editEvent._id ? { ...ev, ...eventData } : ev);
     } else {
       // CREATE
-      const res = await axios.post(`${baseurl}/events`, eventData, config);
+      const res = await axios.post(`${base_url}events`, eventData, config);
       alert('Event created successfully!');
       updatedEvents = [...eventsData, res.data.event];  // Assume backend returns new event
     }

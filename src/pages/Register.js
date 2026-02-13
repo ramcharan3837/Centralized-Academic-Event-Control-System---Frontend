@@ -9,6 +9,9 @@ import axios from "axios";
 import { base_url } from "../components/baseUrl";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
+import ModalPopup from "./ModalPopup";
+
+
 
 const BRANCH_OPTIONS = ["CSE", "ECE", "CIVIL", "MECHANICAL", "MCA"];
 const ROLE_OPTIONS = [
@@ -596,6 +599,8 @@ function Register() {
           </p>
         )}
       </div>
+      <ModalPopup showPopup={showPopup} type={type} message={message} buttons={buttons} />
+
     </div>
   );
 }
