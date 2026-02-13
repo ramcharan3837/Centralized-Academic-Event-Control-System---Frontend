@@ -1,10 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { base_url } from "../components/baseUrl";
+import EmailButtons from "../components/EmailButtons";
+import CSVDownloadButtons from "../components/CSVDownloadButtons";
+import SponsorImageManager from "../components/SponsorImageManager";
 
 function EventCalendar({ events = [], onDateClick }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
+
 
   const eventDates = events.map((event) => {
     const dateStr = String(event.date);
@@ -458,6 +462,188 @@ function AdminDashboard() {
   const [loadingNotifications, setLoadingNotifications] =
     useState(false);
   const [notificationsError, setNotificationsError] = useState("");
+  // ============================================
+  // NEW: CSV DOWNLOAD HELPER FUNCTIONS
+  // ============================================
+
+  // Convert data to CSV format
+  const convertToCSV = (data, headers) => {
+    if (!data || data.length === 0) return '';
+
+    const headerRow = headers.map(h => h.title).join(',');
+    const rows = data.map(row => {
+      return headers.map(h => {
+        const value = row[h.id] || '';
+        const escapedValue = String(value).replace(/"/g, '""');
+        return `"${escapedValue}"`;
+      }).join(',');
+    });
+
+    return [headerRow, ...rows].join('\n');
+  };
+
+  // Helper to download CSV
+  const downloadCSV = (csvContent, filename) => {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Download All Users CSV
+  const handleDownloadAllUsers = () => {
+    const headers = [
+      { id: 'id', title: 'User ID' },
+      { id: 'fullName', title: 'Full Name' },
+      { id: 'email', title: 'Email' },
+      { id: 'rollNumber', title: 'Roll Number' },
+      { id: 'branch', title: 'Branch' },
+      { id: 'role', title: 'Role' },
+      { id: 'approved', title: 'Approved' },
+      { id: 'createdAt', title: 'Created At' }
+    ];
+
+    const userData = users.map(user => ({
+      id: user._id || '',
+      fullName: user.fullName || '',
+      email: user.email || '',
+      rollNumber: user.rollNumber || '',
+      branch: user.branch || '',
+      role: user.role || '',
+      approved: user.approved ? 'Yes' : 'No',
+      createdAt: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''
+    }));
+
+    const csvContent = convertToCSV(userData, headers);
+    downloadCSV(csvContent, `all-users-${Date.now()}.csv`);
+    alert(`Downloaded ${users.length} users!`);
+  };
+
+  // Download Filtered Users CSV (based on current filters)
+  const handleDownloadFilteredUsers = () => {
+    let filteredData = [];
+    let filterName = '';
+
+    if (selectedUserBranch) {
+      filteredData = filteredUserUsers;
+      filterName = `${selectedUserBranch}-users`;
+    } else {
+      filteredData = users;
+      filterName = 'all-users';
+    }
+
+    const headers = [
+      { id: 'id', title: 'User ID' },
+      { id: 'fullName', title: 'Full Name' },
+      { id: 'email', title: 'Email' },
+      { id: 'rollNumber', title: 'Roll Number' },
+      { id: 'branch', title: 'Branch' },
+      { id: 'role', title: 'Role' },
+      { id: 'approved', title: 'Approved' },
+      { id: 'createdAt', title: 'Created At' }
+    ];
+
+    const userData = filteredData.map(user => ({
+      id: user._id || '',
+      fullName: user.fullName || '',
+      email: user.email || '',
+      rollNumber: user.rollNumber || '',
+      branch: user.branch || '',
+      role: user.role || '',
+      approved: user.approved ? 'Yes' : 'No',
+      createdAt: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''
+    }));
+
+    const csvContent = convertToCSV(userData, headers);
+    downloadCSV(csvContent, `${filterName}-${Date.now()}.csv`);
+    alert(`Downloaded ${filteredData.length} users!`);
+  };
+
+  // Download All Events CSV
+  const handleDownloadAllEvents = () => {
+    const headers = [
+      { id: 'id', title: 'Event ID' },
+      { id: 'name', title: 'Event Name' },
+      { id: 'date', title: 'Date' },
+      { id: 'venue', title: 'Venue' },
+      { id: 'strength', title: 'Capacity' },
+      { id: 'shortDesc', title: 'Description' },
+      { id: 'registrationFee', title: 'Registration Fee' },
+      { id: 'approved', title: 'Approved' },
+      { id: 'createdBy', title: 'Created By' },
+      { id: 'createdAt', title: 'Created At' }
+    ];
+
+    const eventData = approvedEvents.map(event => ({
+      id: event._id || '',
+      name: event.name || '',
+      date: event.date || '',
+      venue: event.venue || '',
+      strength: event.strength || 0,
+      shortDesc: event.shortDesc || '',
+      registrationFee: event.registrationFee || 0,
+      approved: event.approved ? 'Yes' : 'No',
+      createdBy: event.createdBy?.fullName || event.createdBy?.email || '',
+      createdAt: event.createdAt ? new Date(event.createdAt).toLocaleDateString() : ''
+    }));
+
+    const csvContent = convertToCSV(eventData, headers);
+    downloadCSV(csvContent, `all-events-${Date.now()}.csv`);
+    alert(`Downloaded ${approvedEvents.length} events!`);
+  };
+
+  // Download Event-Specific Users CSV
+  const handleDownloadEventUsers = async (event) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        `${base_url}events/${event._id}/registrations`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const registrations = response.data.registrations || [];
+
+      if (registrations.length === 0) {
+        alert('No users registered for this event.');
+        return;
+      }
+
+      const headers = [
+        { id: 'eventName', title: 'Event Name' },
+        { id: 'eventDate', title: 'Event Date' },
+        { id: 'fullName', title: 'Full Name' },
+        { id: 'email', title: 'Email' },
+        { id: 'rollNumber', title: 'Roll Number' },
+        { id: 'branch', title: 'Branch' },
+        { id: 'attendanceStatus', title: 'Attendance Status' }
+      ];
+
+      const userData = registrations.map(reg => ({
+        eventName: event.name,
+        eventDate: event.date,
+        fullName: reg.fullName || '',
+        email: reg.email || '',
+        rollNumber: reg.rollNumber || '',
+        branch: reg.branch || '',
+        attendanceStatus: reg.attendanceStatus || 'not_marked'
+      }));
+
+      const csvContent = convertToCSV(userData, headers);
+      downloadCSV(csvContent, `${event.name}-registered-users-${Date.now()}.csv`);
+      alert(`Downloaded ${registrations.length} registered users for ${event.name}!`);
+    } catch (error) {
+      console.error('Error downloading event users:', error);
+      alert('Failed to download event users. Please try again.');
+    }
+  };
+  // ============================================
+  // END OF CSV HELPER FUNCTIONS
+  // ============================================
 
   useEffect(() => {
     getPendingEvents();
@@ -598,7 +784,7 @@ function AdminDashboard() {
       !shortDesc ||
       !about ||
       !learning
-      
+
     ) {
       alert("Please fill all required fields");
       return;
@@ -1401,12 +1587,23 @@ function AdminDashboard() {
                 <h3 className="text-xl sm:text-2xl font-bold text-green-400">
                   Upcoming Events ({upcomingEvents.length})
                 </h3>
-                <button
-                  onClick={getApprovedEvents}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
-                >
-                  Refresh
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  {/* NEW: Download All Events CSV */}
+                  <button
+                    onClick={handleDownloadAllEvents}
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition text-sm flex items-center gap-2"
+                  >
+                    <span>📊</span>
+                    <span className="hidden sm:inline">Download All Events</span>
+                    <span className="sm:hidden">CSV</span>
+                  </button>
+                  <button
+                    onClick={getApprovedEvents}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+                  >
+                    Refresh
+                  </button>
+                </div>
               </div>
 
               {upcomingEvents.length === 0 ? (
@@ -1542,7 +1739,27 @@ function AdminDashboard() {
                             💰 View Payments
                           </button>
                         )}
+                        <button
+                          onClick={() => handleDownloadEventUsers(event)}
+                          className="self-start bg-cyan-600 hover:bg-cyan-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded flex items-center gap-1"
+                        >
+                          <span>📊</span>
+                          <span>Download Event Users</span>
+                        </button>
                       </div>
+                      <div className="border-t border-gray-700 mt-6 pt-6">
+                        <EmailButtons
+                          eventId={event._id}
+                          eventName={event.name}
+                        />
+                        {/* 
+                        <CSVDownloadButtons
+                          eventId={event._id}
+                          eventName={event.name}
+                          showEventSpecific={true}
+                        /> */}
+                      </div>
+
                     </div>
                   ))}
                 </div>
@@ -1688,14 +1905,27 @@ function AdminDashboard() {
               <h3 className="text-xl sm:text-2xl font-bold text-blue-400">
                 All Users ({users.length})
               </h3>
-              <button
-                onClick={getAllUsers}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
-              >
-                Refresh
-              </button>
+              <div className="flex flex-wrap gap-2">
+                {/* NEW: CSV Download Button */}
+                <button
+                  onClick={handleDownloadFilteredUsers}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition text-sm flex items-center gap-2"
+                  title={selectedUserBranch ? `Download ${selectedUserBranch} users` : 'Download all users'}
+                >
+                  <span>📊</span>
+                  <span className="hidden sm:inline">
+                    {selectedUserBranch ? `Download ${selectedUserBranch} Users` : 'Download All Users'}
+                  </span>
+                  <span className="sm:hidden">CSV</span>
+                </button>
+                <button
+                  onClick={getAllUsers}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+                >
+                  Refresh
+                </button>
+              </div>
             </div>
-
             {loadingUsers ? (
               <p className="text-gray-400">Loading users...</p>
             ) : users.length === 0 ? (
@@ -2025,12 +2255,7 @@ function AdminDashboard() {
                         <p className="text-gray-300 text-xs sm:text-sm whitespace-pre-line">
                           {n.message}
                         </p>
-                        {n.eventId && (
-                          <p className="text-gray-400 text-[11px] sm:text-xs mt-2">
-                            Related to event ID{" "}
-                            <span className="text-blue-400">{n.eventId}</span>
-                          </p>
-                        )}
+                        
                       </div>
                       <span
                         className={`text-[11px] sm:text-xs px-3 py-1 rounded-full ${n.isRead ? "bg-gray-600 text-white" : "bg-blue-600 text-white"
@@ -2288,6 +2513,7 @@ function AdminDashboard() {
           </div>
         </div>
       )}
+      <SponsorImageManager />
     </div>
   );
 }

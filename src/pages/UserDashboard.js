@@ -1695,14 +1695,7 @@ function UserDashboard() {
                                   <p className="text-gray-300 text-xs sm:text-sm whitespace-pre-line">
                                     {n.message}
                                   </p>
-                                  {n.eventId && (
-                                    <p className="text-gray-400 text-xs mt-2">
-                                      Related to event ID:{" "}
-                                      <span className="text-blue-400">
-                                        {n.eventId}
-                                      </span>
-                                    </p>
-                                  )}
+                                  
                                 </div>
                                 <span
                                   className={`text-xs px-3 py-1 rounded-full ${n.isRead
