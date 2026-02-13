@@ -4,6 +4,7 @@ import Hero from "../components/Hero";
 import axios from "axios";
 import { base_url } from "../components/baseUrl";
 import { useNavigate } from "react-router-dom";
+import SponsorCarousel from "../components/SponsorCarousel"; // NEW IMPORT
 
 
 
@@ -71,6 +72,9 @@ function Home() {
         )}
       </section>
 
+      {/* NEW: SPONSOR CAROUSEL - Added after events section */}
+      <SponsorCarousel />
+
       {/* Event Modal */}
       {selectedEvent && (
         <EventModal
@@ -84,10 +88,10 @@ function Home() {
 
 // Event Modal Component
 function EventModal({ event, onClose }) {
-  const navigate = useNavigate();          // add this line
+  const navigate = useNavigate();
 
   const handleRegister = () => {
-    navigate("/login");                    // instead of window.location.href = "/login";
+    navigate("/login");
   };
 
   return (
