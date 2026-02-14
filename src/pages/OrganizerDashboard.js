@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { base_url } from "../components/baseUrl";
+import ModalPopup from "../pages/ModalPopup";
 
 // Compact Event Calendar Component
 function CompactEventCalendar({ events = [] }) {
@@ -256,6 +257,21 @@ function OrganizerDashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [registrationFee, setRegistrationFee] = useState('');  // ADD THIS
 
+  // Modal Popup state
+  const [modalConfig, setModalConfig] = useState({
+    showPopup: false,
+    type: 'info',
+    message: '',
+    buttons: []
+  });
+
+  const showModal = (type, message, buttons = []) => {
+    setModalConfig({ showPopup: true, type, message, buttons });
+  };
+
+  const closeModal = () => {
+    setModalConfig({ showPopup: false, type: 'info', message: '', buttons: [] });
+  };
 
   useEffect(() => {
     getAllEvents();
@@ -280,7 +296,7 @@ function OrganizerDashboard() {
   const getAllUsers = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     setLoadingUsers(true);
@@ -293,7 +309,7 @@ function OrganizerDashboard() {
       })
       .catch((err) => {
         console.log(err);
-        alert(err.response?.data?.message || "Failed to fetch users");
+        showModal('error', err.response?.data?.message || "Failed to fetch users", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       })
       .finally(() => setLoadingUsers(false));
   };
@@ -303,13 +319,13 @@ function OrganizerDashboard() {
   const submitFeedback = async (eventId) => {
     const text = feedbackInputs[eventId]?.trim();
     if (!text) {
-      alert("Please enter feedback");
+      showModal('warning', "Please enter feedback", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
       await axios.post(
@@ -323,7 +339,7 @@ function OrganizerDashboard() {
     } catch (err) {
       console.error("Error submitting feedback", err);
       const msg = err.response?.data?.message || "Failed to submit feedback";
-      alert(msg);
+      showModal('info', msg, [{ text: 'OK', variant: 'primary', action: closeModal }]);
     }
   };
 
@@ -404,7 +420,7 @@ function OrganizerDashboard() {
   const handleSaveEvent = async (e) => {
   e.preventDefault();
   if (!name || !eventDate || !venue || !strength || !shortDesc || !about || !learning) {
-    alert('Please fill all fields');
+    showModal('warning', 'Please fill all fields', [{ text: 'OK', variant: 'primary', action: closeModal }]);
     return;
   }
   const eventData = {
@@ -425,20 +441,20 @@ function OrganizerDashboard() {
       // UPDATE
       const res = await axios.put(`${base_url}events/${editEvent._id}`, eventData, config);
       console.log("apicall")
-      alert('Event updated successfully!');
+      showModal('success', 'Event updated successfully!', [{ text: 'OK', variant: 'primary', action: closeModal }]);
       // Optimistic local update
       updatedEvents = eventsData.map(ev => ev._id === editEvent._id ? { ...ev, ...eventData } : ev);
     } else {
       // CREATE
       const res = await axios.post(`${base_url}events`, eventData, config);
-      alert('Event created successfully!');
+      showModal('success', 'Event created successfully!', [{ text: 'OK', variant: 'primary', action: closeModal }]);
       updatedEvents = [...eventsData, res.data.event];  // Assume backend returns new event
     }
     setEventsData(updatedEvents);
     resetForm();
   } catch (err) {
     console.error('Save error:', err.response?.data);
-    alert(err.response?.data?.message || 'Failed to save event');
+    showModal('error', err.response?.data?.message || 'Failed to save event', [{ text: 'OK', variant: 'primary', action: closeModal }]);
   }
 };
 
@@ -486,7 +502,7 @@ const handleEditClick = (event) => {
 
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
 
@@ -498,10 +514,8 @@ const handleEditClick = (event) => {
       setEventRegistrations(res.data.registrations || []);
     } catch (err) {
       console.error(err);
-      alert(
-        err.response?.data?.message ||
-        "Failed to load registrations for this event"
-      );
+      showModal('error', err.response?.data?.message ||
+        "Failed to load registrations for this event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
     } finally {
       setLoadingEventRegistrations(false);
     }
@@ -515,7 +529,7 @@ const handleEditClick = (event) => {
   const handleNotifications = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     setLoadingNotifications(true);
@@ -526,7 +540,7 @@ const handleEditClick = (event) => {
       .then((res) => setNotificationsData(res.data.notifications || []))
       .catch((err) => {
         console.error(err);
-        alert(err.response?.data?.message || "Failed to load notifications");
+        showModal('error', err.response?.data?.message || "Failed to load notifications", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       })
       .finally(() => setLoadingNotifications(false));
   };
@@ -534,7 +548,7 @@ const handleEditClick = (event) => {
   const handleMarkOneRead = (id) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     axios
@@ -552,14 +566,14 @@ const handleEditClick = (event) => {
       })
       .catch((err) => {
         console.error(err);
-        alert(err.response?.data?.message || "Failed to update notification");
+        showModal('error', err.response?.data?.message || "Failed to update notification", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
   const handleMarkAllRead = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     axios
@@ -577,7 +591,7 @@ const handleEditClick = (event) => {
       })
       .catch((err) => {
         console.error(err);
-        alert(err.response?.data?.message || "Failed to update notifications");
+        showModal('error', err.response?.data?.message || "Failed to update notifications", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -586,7 +600,7 @@ const handleEditClick = (event) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
 
@@ -603,9 +617,7 @@ const handleEditClick = (event) => {
       );
     } catch (err) {
       console.error(err);
-      alert(
-        err.response?.data?.message || "Failed to update attendance"
-      );
+      showModal('error', err.response?.data?.message || "Failed to update attendance", [{ text: 'OK', variant: 'primary', action: closeModal }]);
     }
   };
 
@@ -1457,6 +1469,12 @@ const handleEditClick = (event) => {
           </div>
         </div>
       )}
+      <ModalPopup 
+        showPopup={modalConfig.showPopup}
+        type={modalConfig.type}
+        message={modalConfig.message}
+        buttons={modalConfig.buttons}
+      />
     </div>
 
   );
