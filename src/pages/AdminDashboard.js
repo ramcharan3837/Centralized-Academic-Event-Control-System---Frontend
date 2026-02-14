@@ -4,6 +4,7 @@ import { base_url } from "../components/baseUrl";
 import EmailButtons from "../components/EmailButtons";
 import CSVDownloadButtons from "../components/CSVDownloadButtons";
 import SponsorImageManager from "../components/SponsorImageManager";
+import ModalPopup from "../pages/ModalPopup";
 
 function EventCalendar({ events = [], onDateClick }) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -462,6 +463,23 @@ function AdminDashboard() {
   const [loadingNotifications, setLoadingNotifications] =
     useState(false);
   const [notificationsError, setNotificationsError] = useState("");
+  
+  // Modal Popup state
+  const [modalConfig, setModalConfig] = useState({
+    showPopup: false,
+    type: 'info',
+    message: '',
+    buttons: []
+  });
+
+  const showModal = (type, message, buttons = []) => {
+    setModalConfig({ showPopup: true, type, message, buttons });
+  };
+
+  const closeModal = () => {
+    setModalConfig({ showPopup: false, type: 'info', message: '', buttons: [] });
+  };
+
   // ============================================
   // NEW: CSV DOWNLOAD HELPER FUNCTIONS
   // ============================================
@@ -521,7 +539,7 @@ function AdminDashboard() {
 
     const csvContent = convertToCSV(userData, headers);
     downloadCSV(csvContent, `all-users-${Date.now()}.csv`);
-    alert(`Downloaded ${users.length} users!`);
+    showModal('success', `Downloaded ${users.length} users!`, [{ text: 'OK', variant: 'primary', action: closeModal }]);
   };
 
   // Download Filtered Users CSV (based on current filters)
@@ -561,7 +579,7 @@ function AdminDashboard() {
 
     const csvContent = convertToCSV(userData, headers);
     downloadCSV(csvContent, `${filterName}-${Date.now()}.csv`);
-    alert(`Downloaded ${filteredData.length} users!`);
+    showModal('success', `Downloaded ${filteredData.length} users!`, [{ text: 'OK', variant: 'primary', action: closeModal }]);
   };
 
   // Download All Events CSV
@@ -594,7 +612,7 @@ function AdminDashboard() {
 
     const csvContent = convertToCSV(eventData, headers);
     downloadCSV(csvContent, `all-events-${Date.now()}.csv`);
-    alert(`Downloaded ${approvedEvents.length} events!`);
+    showModal('success', `Downloaded ${approvedEvents.length} events!`, [{ text: 'OK', variant: 'primary', action: closeModal }]);
   };
 
   // Download Event-Specific Users CSV
@@ -609,7 +627,7 @@ function AdminDashboard() {
       const registrations = response.data.registrations || [];
 
       if (registrations.length === 0) {
-        alert('No users registered for this event.');
+        showModal('warning', 'No users registered for this event.', [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
 
@@ -635,10 +653,10 @@ function AdminDashboard() {
 
       const csvContent = convertToCSV(userData, headers);
       downloadCSV(csvContent, `${event.name}-registered-users-${Date.now()}.csv`);
-      alert(`Downloaded ${registrations.length} registered users for ${event.name}!`);
+      showModal('success', `Downloaded ${registrations.length} registered users for ${event.name}!`, [{ text: 'OK', variant: 'primary', action: closeModal }]);
     } catch (error) {
       console.error('Error downloading event users:', error);
-      alert('Failed to download event users. Please try again.');
+      showModal('error', 'Failed to download event users. Please try again.', [{ text: 'OK', variant: 'primary', action: closeModal }]);
     }
   };
   // ============================================
@@ -661,10 +679,7 @@ function AdminDashboard() {
       .then((res) => setPendingEvents(res?.data?.events || []))
       .catch((err) => {
         console.log(err.message);
-        alert(
-          err.response?.data?.message ||
-          "Failed to fetch pending events"
-        );
+        showModal('error', err.response?.data?.message || "Failed to fetch pending events", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -706,7 +721,7 @@ function AdminDashboard() {
       }));
     } catch (err) {
       console.error("Error fetching feedback", err);
-      alert("Failed to load feedback");
+      showModal('error', "Failed to load feedback", [{ text: 'OK', variant: 'primary', action: closeModal }]);
     } finally {
       setLoadingFeedback((prev) => ({ ...prev, [eventId]: false }));
     }
@@ -715,13 +730,13 @@ function AdminDashboard() {
   const submitFeedback = async (eventId) => {
     const text = feedbackInputs[eventId]?.trim();
     if (!text) {
-      alert("Please enter feedback");
+      showModal('warning', "Please enter feedback", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
       await axios.post(
@@ -735,14 +750,14 @@ function AdminDashboard() {
       console.error("Error submitting feedback", err);
       const msg =
         err.response?.data?.message || "Failed to submit feedback";
-      alert(msg);
+      showModal('info', msg, [{ text: 'OK', variant: 'primary', action: closeModal }]);
     }
   };
 
   const getAllUsers = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     setLoadingUsers(true);
@@ -753,9 +768,7 @@ function AdminDashboard() {
       .then((res) => setUsers(res.data.users || []))
       .catch((err) => {
         console.log(err);
-        alert(
-          err.response?.data?.message || "Failed to fetch users"
-        );
+        showModal('error', err.response?.data?.message || "Failed to fetch users", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       })
       .finally(() => setLoadingUsers(false));
   };
@@ -767,9 +780,7 @@ function AdminDashboard() {
       .then((res) => setVenues(res.data.venues || []))
       .catch((err) => {
         console.error(err);
-        alert(
-          err.response?.data?.message || "Failed to fetch venues"
-        );
+        showModal('error', err.response?.data?.message || "Failed to fetch venues", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       })
       .finally(() => setLoadingVenues(false));
   };
@@ -786,7 +797,7 @@ function AdminDashboard() {
       !learning
 
     ) {
-      alert("Please fill all required fields");
+      showModal('warning', "Please fill all required fields", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
 
@@ -810,33 +821,29 @@ function AdminDashboard() {
       axios
         .put(base_url + `events/${editEvent._id}`, eventData, config)
         .then((res) => {
-          alert(res.data.message || "Event updated successfully!");
+          showModal('success', res.data.message || "Event updated successfully!", [{ text: 'OK', variant: 'primary', action: closeModal }]);
           resetForm();
           getPendingEvents();
           getApprovedEvents();
         })
         .catch((err) => {
           console.log(err);
-          alert(
-            err.response?.data?.message ||
-            "Failed to update event"
-          );
+          showModal('error', err.response?.data?.message ||
+            "Failed to update event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         });
     } else {
       axios
         .post(base_url + "events", eventData, config)
         .then((res) => {
-          alert(res.data.message || "Event created successfully!");
+          showModal('success', res.data.message || "Event created successfully!", [{ text: 'OK', variant: 'primary', action: closeModal }]);
           resetForm();
           getPendingEvents();
           getApprovedEvents();
         })
         .catch((err) => {
           console.log(err);
-          alert(
-            err.response?.data?.message ||
-            "Failed to create event"
-          );
+          showModal('error', err.response?.data?.message ||
+            "Failed to create event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         });
     }
   };
@@ -885,16 +892,14 @@ function AdminDashboard() {
         }
       )
       .then(() => {
-        alert("Event approved successfully!");
+        showModal('success', "Event approved successfully!", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         getPendingEvents();
         getApprovedEvents();
       })
       .catch((err) => {
         console.log(err);
-        alert(
-          err.response?.data?.message ||
-          "Failed to approve event"
-        );
+        showModal('error', err.response?.data?.message ||
+          "Failed to approve event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -911,15 +916,13 @@ function AdminDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
-        alert("Event rejected successfully!");
+        showModal('success', "Event rejected successfully!", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         getPendingEvents();
       })
       .catch((err) => {
         console.log(err);
-        alert(
-          err.response?.data?.message ||
-          "Failed to reject event"
-        );
+        showModal('error', err.response?.data?.message ||
+          "Failed to reject event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -936,15 +939,13 @@ function AdminDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {
-        alert("Event deleted successfully!");
+        showModal('success', "Event deleted successfully!", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         getApprovedEvents();
       })
       .catch((err) => {
         console.log(err);
-        alert(
-          err.response?.data?.message ||
-          "Failed to delete event"
-        );
+        showModal('error', err.response?.data?.message ||
+          "Failed to delete event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -957,7 +958,7 @@ function AdminDashboard() {
       return;
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     axios
@@ -967,14 +968,12 @@ function AdminDashboard() {
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((res) => {
-        alert(res.data.message || "User role updated");
+        showModal('success', res.data.message || "User role updated", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         getAllUsers();
       })
       .catch((err) => {
         console.log(err);
-        alert(
-          err.response?.data?.message || "Failed to update role"
-        );
+        showModal('error', err.response?.data?.message || "Failed to update role", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -986,7 +985,7 @@ function AdminDashboard() {
   const handleNotifications = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     setLoadingNotifications(true);
@@ -1004,10 +1003,8 @@ function AdminDashboard() {
           err.response?.data?.message ||
           "Failed to load notifications"
         );
-        alert(
-          err.response?.data?.message ||
-          "Failed to load notifications"
-        );
+        showModal('error', err.response?.data?.message ||
+          "Failed to load notifications", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       })
       .finally(() => setLoadingNotifications(false));
   };
@@ -1015,7 +1012,7 @@ function AdminDashboard() {
   const handleMarkOneRead = (id) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     axios
@@ -1035,17 +1032,15 @@ function AdminDashboard() {
       })
       .catch((err) => {
         console.error(err);
-        alert(
-          err.response?.data?.message ||
-          "Failed to update notification"
-        );
+        showModal('error', err.response?.data?.message ||
+          "Failed to update notification", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
   const handleMarkAllRead = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     axios
@@ -1063,10 +1058,8 @@ function AdminDashboard() {
       })
       .catch((err) => {
         console.error(err);
-        alert(
-          err.response?.data?.message ||
-          "Failed to update notifications"
-        );
+        showModal('error', err.response?.data?.message ||
+          "Failed to update notifications", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -1078,7 +1071,7 @@ function AdminDashboard() {
       setLoadingUserRegistrations(true);
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
       const res = await axios.get(
@@ -1088,10 +1081,8 @@ function AdminDashboard() {
       setUserRegistrations(res.data.events || []);
     } catch (err) {
       console.error(err);
-      alert(
-        err.response?.data?.message ||
-        "Failed to load registrations for this user"
-      );
+      showModal('error', err.response?.data?.message ||
+        "Failed to load registrations for this user", [{ text: 'OK', variant: 'primary', action: closeModal }]);
     } finally {
       setLoadingUserRegistrations(false);
     }
@@ -1110,7 +1101,7 @@ function AdminDashboard() {
       setLoadingEventRegistrations(true);
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
       const res = await axios.get(
@@ -1120,10 +1111,8 @@ function AdminDashboard() {
       setEventRegistrations(res.data.registrations || []);
     } catch (err) {
       console.error(err);
-      alert(
-        err.response?.data?.message ||
-        "Failed to load registrations for this event"
-      );
+      showModal('error', err.response?.data?.message ||
+        "Failed to load registrations for this event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
     } finally {
       setLoadingEventRegistrations(false);
     }
@@ -1139,7 +1128,7 @@ function AdminDashboard() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
       await axios.post(
@@ -1154,10 +1143,8 @@ function AdminDashboard() {
       );
     } catch (err) {
       console.error(err);
-      alert(
-        err.response?.data?.message ||
-        "Failed to update attendance"
-      );
+      showModal('error', err.response?.data?.message ||
+        "Failed to update attendance", [{ text: 'OK', variant: 'primary', action: closeModal }]);
     }
   };
 
@@ -1718,20 +1705,16 @@ function AdminDashboard() {
 
                                 const { payments, totalPayments, totalRevenue } = response.data;
 
-                                alert(
-                                  `Payment Summary for "${event.name}":\n\n` +
+                                showModal('info', `Payment Summary for "${event.name}":\n\n` +
                                   `Total Payments: ${totalPayments}\n` +
                                   `Total Revenue: ₹${totalRevenue}\n\n` +
-                                  `Check console for detailed payment list`
-                                );
+                                  `Check console for detailed payment list`, [{ text: 'OK', variant: 'primary', action: closeModal }]);
 
                                 console.log("Detailed Payments:", payments);
                               } catch (err) {
                                 console.error(err);
-                                alert(
-                                  err.response?.data?.message ||
-                                  "Failed to fetch payment details"
-                                );
+                                showModal('error', err.response?.data?.message ||
+                                  "Failed to fetch payment details", [{ text: 'OK', variant: 'primary', action: closeModal }]);
                               }
                             }}
                             className="self-start bg-yellow-600 hover:bg-yellow-700 text-white text-[11px] sm:text-xs px-3 py-1 rounded"
@@ -2033,11 +2016,11 @@ function AdminDashboard() {
                   e.preventDefault();
                   const token = localStorage.getItem("token");
                   if (!token) {
-                    alert("Please login again");
+                    showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
                     return;
                   }
                   if (!venueName.trim()) {
-                    alert("Venue name is required");
+                    showModal('warning', "Venue name is required", [{ text: 'OK', variant: 'primary', action: closeModal }]);
                     return;
                   }
                   axios
@@ -2056,7 +2039,7 @@ function AdminDashboard() {
                       }
                     )
                     .then(() => {
-                      alert("Venue created successfully");
+                      showModal('success', "Venue created successfully", [{ text: 'OK', variant: 'primary', action: closeModal }]);
                       setVenueName("");
                       setVenueLocation("");
                       setVenueCapacity("");
@@ -2065,10 +2048,8 @@ function AdminDashboard() {
                     })
                     .catch((err) => {
                       console.error(err);
-                      alert(
-                        err.response?.data?.message ||
-                        "Failed to create venue"
-                      );
+                      showModal('error', err.response?.data?.message ||
+                        "Failed to create venue", [{ text: 'OK', variant: 'primary', action: closeModal }]);
                     });
                 }}
                 className="space-y-4"
@@ -2514,6 +2495,12 @@ function AdminDashboard() {
         </div>
       )}
       <SponsorImageManager />
+      <ModalPopup 
+        showPopup={modalConfig.showPopup}
+        type={modalConfig.type}
+        message={modalConfig.message}
+        buttons={modalConfig.buttons}
+      />
     </div>
   );
 }

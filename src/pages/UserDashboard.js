@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { base_url } from "../components/baseUrl";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import ModalPopup from "../pages/ModalPopup";
 
 
 // Compact Event Calendar Component
@@ -280,6 +281,22 @@ function UserDashboard() {
   const [activeSection, setActiveSection] = useState("events");
   // "events" | "registered" | "attended" | "notifications"
 
+  // Modal Popup state
+  const [modalConfig, setModalConfig] = useState({
+    showPopup: false,
+    type: 'info',
+    message: '',
+    buttons: []
+  });
+
+  const showModal = (type, message, buttons = []) => {
+    setModalConfig({ showPopup: true, type, message, buttons });
+  };
+
+  const closeModal = () => {
+    setModalConfig({ showPopup: false, type: 'info', message: '', buttons: [] });
+  };
+
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       const script = document.createElement('script');
@@ -296,7 +313,7 @@ function UserDashboard() {
 
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
 
@@ -315,7 +332,7 @@ function UserDashboard() {
     } catch (err) {
       console.error("Error registering for free event", err);
       const msg = err.response?.data?.message || "Failed to register";
-      alert(msg);
+      showModal('info', msg, [{ text: 'OK', variant: 'primary', action: closeModal }]);
     } finally {
       setPaymentLoading(false);
     }
@@ -328,14 +345,14 @@ function UserDashboard() {
       // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
-        alert('Failed to load payment gateway. Please try again.');
+        showModal('error', 'Failed to load payment gateway. Please try again.', [{ text: 'OK', variant: 'primary', action: closeModal }]);
         setPaymentLoading(false);
         return;
       }
 
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
 
@@ -386,7 +403,7 @@ function UserDashboard() {
             );
 
             if (verifyResponse.data.status === 'Success') {
-              alert('Payment successful! You are now registered.');
+              showModal('success', 'Payment successful! You are now registered.', [{ text: 'OK', variant: 'primary', action: closeModal }]);
               updateRegisteredLocal(event);
               setShowConfirm(false);
               setConfirmEvent(null);
@@ -394,7 +411,7 @@ function UserDashboard() {
             }
           } catch (error) {
             console.error('Payment verification error:', error);
-            alert('Payment verification failed. Please contact support with payment ID: ' + response.razorpay_payment_id);
+            showModal('error', 'Payment verification failed. Please contact support with payment ID: ' + response.razorpay_payment_id, [{ text: 'OK', variant: 'primary', action: closeModal }]);
           } finally {
             setPaymentLoading(false);
           }
@@ -426,7 +443,7 @@ function UserDashboard() {
       razorpay.open();
     } catch (error) {
       console.error('Payment error:', error);
-      alert(error.response?.data?.message || 'Failed to process payment');
+      showModal('error', error.response?.data?.message || 'Failed to process payment', [{ text: 'OK', variant: 'primary', action: closeModal }]);
       setPaymentLoading(false);
     }
   };
@@ -459,7 +476,7 @@ function UserDashboard() {
   const handleNotifications = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     setLoadingNotifications(true);
@@ -470,9 +487,7 @@ function UserDashboard() {
       .then((res) => setNotificationsData(res.data.notifications || []))
       .catch((err) => {
         console.error(err);
-        alert(
-          err.response?.data?.message || "Failed to load notifications"
-        );
+        showModal('error', err.response?.data?.message || "Failed to load notifications", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       })
       .finally(() => setLoadingNotifications(false));
   };
@@ -480,7 +495,7 @@ function UserDashboard() {
   const handleMarkOneRead = (id) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     axios
@@ -498,16 +513,14 @@ function UserDashboard() {
       })
       .catch((err) => {
         console.error(err);
-        alert(
-          err.response?.data?.message || "Failed to update notification"
-        );
+        showModal('error', err.response?.data?.message || "Failed to update notification", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
   const handleMarkAllRead = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login again");
+      showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
     axios
@@ -525,10 +538,8 @@ function UserDashboard() {
       })
       .catch((err) => {
         console.error(err);
-        alert(
-          err.response?.data?.message ||
-          "Failed to update notifications"
-        );
+        showModal('error', err.response?.data?.message ||
+          "Failed to update notifications", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       });
   };
 
@@ -571,14 +582,14 @@ function UserDashboard() {
     const text = feedbackInputs[eventId]?.trim();
 
     if (!text) {
-      alert("Please enter feedback");
+      showModal('warning', "Please enter feedback", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
 
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please login again");
+        showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         return;
       }
 
@@ -594,7 +605,7 @@ function UserDashboard() {
       console.error("Error submitting feedback", err);
       const msg =
         err.response?.data?.message || "Failed to submit feedback";
-      alert(msg);
+      showModal('info', msg, [{ text: 'OK', variant: 'primary', action: closeModal }]);
     }
   };
 
@@ -677,7 +688,7 @@ function UserDashboard() {
       !about ||
       !learning
     ) {
-      alert("Please fill all fields");
+      showModal('warning', "Please fill all fields", [{ text: 'OK', variant: 'primary', action: closeModal }]);
       return;
     }
 
@@ -698,29 +709,25 @@ function UserDashboard() {
       axios
         .put(base_url + `events/${editEvent.id}`, eventData, config)
         .then(() => {
-          alert("Event updated and submitted for re-approval!");
+          showModal('success', "Event updated and submitted for re-approval!", [{ text: 'OK', variant: 'primary', action: closeModal }]);
           resetForm();
           getAllEvents();
         })
         .catch((err) => {
           console.log(err);
-          alert(
-            err.response?.data?.message || "Failed to update event"
-          );
+          showModal('error', err.response?.data?.message || "Failed to update event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         });
     } else {
       axios
         .post(base_url + "events", eventData, config)
         .then(() => {
-          alert("Event submitted for admin approval!");
+          showModal('info', "Event submitted for admin approval!", [{ text: 'OK', variant: 'primary', action: closeModal }]);
           resetForm();
           getAllEvents();
         })
         .catch((err) => {
           console.log(err);
-          alert(
-            err.response?.data?.message || "Failed to create event"
-          );
+          showModal('error', err.response?.data?.message || "Failed to create event", [{ text: 'OK', variant: 'primary', action: closeModal }]);
         });
     }
   };
@@ -791,7 +798,7 @@ function UserDashboard() {
   //   try {
   //     const token = localStorage.getItem("token");
   //     if (!token) {
-  //       alert("Please login again");
+  //       showModal('warning', "Please login again", [{ text: 'OK', variant: 'primary', action: closeModal }]);
   //       return;
   //     }
 
@@ -810,7 +817,7 @@ function UserDashboard() {
   //     console.error("Error registering for event", err);
   //     const msg =
   //       err.response?.data?.message || "Failed to register";
-  //     alert(msg);
+  //     showModal('info', msg, [{ text: 'OK', variant: 'primary', action: closeModal }]);
   //     setShowConfirm(false);
   //     setConfirmEvent(null);
   //   }
@@ -1846,6 +1853,12 @@ function UserDashboard() {
           </div>
         </div>
       )}
+      <ModalPopup 
+        showPopup={modalConfig.showPopup}
+        type={modalConfig.type}
+        message={modalConfig.message}
+        buttons={modalConfig.buttons}
+      />
     </div>
   );
 }

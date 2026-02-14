@@ -160,6 +160,13 @@ useEffect(() => {
       ) : (
         <ForgotPasswordModal onClose={() => setShowForgotPassword(false)} />
       )}
+      
+      <ModalPopup 
+        showPopup={showPopup}
+        type={type}
+        message={message}
+        buttons={buttons}
+      />
     </div>
   );
 }
